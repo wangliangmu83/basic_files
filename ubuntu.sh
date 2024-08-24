@@ -5,18 +5,8 @@ tarball="ubuntu.tar.gz"
 
 # Check if the folder already exists
 if [ ! -d "$folder" ]; then
-	cd ~/
-	mkdir -p jails/$folder
-	cd jails/$folder
 	echo "downloading ubuntu-image"
-	case $(dpkg --print-architecture) in
-		aarch64) archurl="arm64" ;;
-		arm)     archurl="armhf" ;;
-		amd64)   archurl="amd64" ;;
-		i*86)    archurl="i386" ;;
-		x86_64)  archurl="amd64" ;;
-		*)       echo "unknown architecture"; exit 1 ;;
-	esac
+	
 	wget "https://raw.githubusercontent.com/wangliangmu83/basic_files/main/ubuntu_23_10_core_cloudimg_amd64_root.tar.gz" -O $tarball
 fi
 
@@ -32,7 +22,7 @@ cur=$(pwd)
 mkdir -p "$folder"
 cd "$folder"
 echo "decompressing ubuntu image"
-tar -xzf "${cur}/${tarball}" -C "$cur" --strip-components=1 --no-same-owner --no-same-permissions --to-command='cp -pT "$cur/$folder"'
+tar -xzf "${cur}/${tarball}" --strip-components=1 --no-same-owner --no-same-permissions
 
 # Ensure that the 'root' directory exists
 mkdir -p "$cur/$folder/root"
@@ -43,18 +33,19 @@ echo "fixing nameserver, otherwise it can't connect to the internet"
 echo "nameserver 1.1.1.1" > "$cur/$folder/etc/resolv.conf"
 cd "$cur"
 
+# Create the binds directory and script
 mkdir -p binds
-bin=start-ubuntu.sh
+bin=binds/start-ubuntu.sh
 echo "writing launch script"
 cat > $bin <<- EOM
 #!/bin/bash
-cd \$(dirname \$0)
+CUR_DIR=\$(dirname \$0)
 ## unset LD_PRELOAD in case termux-exec is installed
 unset LD_PRELOAD
 command="proot"
 command+=" --link2symlink"
 command+=" -0"
-command+=" -r $cur/$folder"
+command+=" -r ${cur}/$folder"
 if [ -n "\$(ls -A binds)" ]; then
 	for f in binds/* ;do
 		. \$f
@@ -75,4 +66,4 @@ echo "fixing shebang of $bin"
 termux-fix-shebang $bin
 echo "making $bin executable"
 chmod +x $bin
-echo "You can now launch Ubuntu with the ./${bin} script"
+echo "You can now launch Ubuntu with the ./binds/start-ubuntu.sh script"
