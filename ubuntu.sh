@@ -28,21 +28,14 @@ fi
 
 cur=$(pwd)
 mkdir -p "$folder"
-
-# Create a temporary directory and extract there
-temp_folder=$(mktemp -d)
-echo "decompressing ubuntu image into a temporary directory"
-tar -xzf ${cur}/${tarball} -C $temp_folder --strip-components=1
-
-# Move extracted files to the target directory
-echo "moving extracted files to the target directory"
-mv $temp_folder/* "$folder"
-rmdir $temp_folder
+cd "$folder"
+echo "decompressing ubuntu image"
+tar -xzf ${cur}/${tarball} -C "$folder" --strip-components=1 --no-same-owner --no-same-permissions --to-command='cp -pT "$folder"'
 
 # Ensure that the 'etc' directory exists before creating resolv.conf
-mkdir -p "$folder/etc"
+mkdir -p etc
 echo "fixing nameserver, otherwise it can't connect to the internet"
-echo "nameserver 1.1.1.1" > "$folder/etc/resolv.conf"
+echo "nameserver 1.1.1.1" > etc/resolv.conf
 cd "$cur"
 
 mkdir -p binds
