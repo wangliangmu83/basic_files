@@ -263,7 +263,7 @@ install_caddy() {
     mkdir -p /root/src 
     cd /root/src/
     rm -f caddy-forwardproxy-naive.tar.xz
-    wget https://raw.githubusercontent.com/wangliangmu83/basic_files/main/caddy-forwardproxy-naive.tar.xz
+    wget https://raw.githubusercontent.com/wangliangmu83/basic_files/main/caddy_forwardproxy_naive.tar.xz
 
     tar xvf caddy-forwardproxy-naive.tar.xz 
     systemctl stop naive

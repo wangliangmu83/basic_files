@@ -17,7 +17,7 @@ if [ ! -d "$folder" ]; then
 		x86_64)  archurl="amd64" ;;
 		*)       echo "unknown architecture"; exit 1 ;;
 	esac
-	wget "https://raw.githubusercontent.com/wangliangmu83/basic_files/main/ubuntu-23-10-core-cloudimg-amd64-root.tar.gz" -O $tarball
+	wget "https://raw.githubusercontent.com/wangliangmu83/basic_files/main/ubuntu_23_10_core_cloudimg_amd64_root.tar.gz" -O $tarball
 fi
 
 # Check if the tarball exists
