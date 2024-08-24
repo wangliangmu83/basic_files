@@ -29,14 +29,15 @@ fi
 cur=$(pwd)
 
 # Ensure we are in the correct directory before extracting
-cd "$cur/jails/$folder"
+mkdir -p "$folder"
+cd "$folder"
 echo "decompressing ubuntu image"
-tar -xzf ${cur}/${tarball} -C "$cur/jails/$folder" --strip-components=1 --no-same-owner --no-same-permissions --to-command='cp -pT "$cur/jails/$folder"'
+tar -xzf "${cur}/${tarball}" -C "$cur" --strip-components=1 --no-same-owner --no-same-permissions --to-command='cp -pT "$cur/$folder"'
 
 # Ensure that the 'etc' directory exists before creating resolv.conf
-mkdir -p "$cur/jails/$folder/etc"
+mkdir -p "$cur/$folder/etc"
 echo "fixing nameserver, otherwise it can't connect to the internet"
-echo "nameserver 1.1.1.1" > "$cur/jails/$folder/etc/resolv.conf"
+echo "nameserver 1.1.1.1" > "$cur/$folder/etc/resolv.conf"
 cd "$cur"
 
 mkdir -p binds
@@ -50,7 +51,7 @@ unset LD_PRELOAD
 command="proot"
 command+=" --link2symlink"
 command+=" -0"
-command+=" -r $cur/jails/$folder"
+command+=" -r $cur/$folder"
 if [ -n "\$(ls -A binds)" ]; then
 	for f in binds/* ;do
 		. \$f
@@ -79,7 +80,7 @@ fi
 EOM
 
 echo "fixing shebang of $bin"
-termux-fix-shebang $bin
+termux-fix-shehang $bin
 echo "making $bin executable"
 chmod +x $bin
 echo "You can now launch Ubuntu with the ./${bin} script"
