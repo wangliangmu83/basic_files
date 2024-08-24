@@ -263,7 +263,7 @@ install_caddy() {
     mkdir -p /root/src 
     cd /root/src/
     rm -f caddy-forwardproxy-naive.tar.xz
-    wget https://kakaprince.oss-cn-shanghai.aliyuncs.com/basic_files/caddy-forwardproxy-naive.tar.xz
+    wget https://raw.githubusercontent.com/wangliangmu83/basic_files/main/caddy-forwardproxy-naive.tar.xz
 
     tar xvf caddy-forwardproxy-naive.tar.xz 
     systemctl stop naive
@@ -421,7 +421,7 @@ EOF
 config() {
     mkdir -p /etc/ssl/caddy /etc/caddy /var/www
 
-    wget -c https://kakaprince.oss-cn-shanghai.aliyuncs.com/basic_files/html.tar.gz -O - | tar -xz -C /var/www/
+    wget -c https://raw.githubusercontent.com/wangliangmu83/basic_files/main/html.tar.gz -O - | tar -xz -C /var/www/
             
     # 生成密码
     # /etc/letsencrypt/live/x.dongvps.com/
@@ -749,8 +749,8 @@ show_cert(){
 }
 
 optimize(){
-    curl https://kakaprince.oss-cn-shanghai.aliyuncs.com/basic_files//optimize.sh | bash -
-    curl https://kakaprince.oss-cn-shanghai.aliyuncs.com/basic_files//main/bbr.sh | bash -
+    curl https://raw.githubusercontent.com/wangliangmu83/basic_files/main/optimize.sh | bash -
+    curl https://raw.githubusercontent.com/wangliangmu83/basic_files/main/bbr.sh | bash -
 
 }
 
@@ -766,7 +766,7 @@ cert_renew(){
 }
 
 shell_renew(){
-    curl -o /root/.naive.sh https://kakaprince.oss-cn-shanghai.aliyuncs.com/basic_files/naive.sh 
+    curl -o /root/.naive.sh https://raw.githubusercontent.com/wangliangmu83/basic_files/main/naive.sh 
     chmod +x /root/.naive.sh
     echo
     echo -e "$red naive更新完成，请重新执行naive $none"

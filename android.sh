@@ -91,7 +91,7 @@ pkill -HUP sshd
 pkg install proot wget -y
 
 # 下载并执行Ubuntu安装脚本
-curl -L https://kakaprince.oss-cn-shanghai.aliyuncs.com/basic_files/ubuntu.sh -o ubuntu.sh
+curl -L https://raw.githubusercontent.com/wangliangmu83/basic_files/main/ubuntu.sh -o ubuntu.sh
 chmod +x ubuntu.sh
 ./ubuntu.sh
 
