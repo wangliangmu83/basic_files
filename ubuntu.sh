@@ -6,8 +6,8 @@ tarball="ubuntu.tar.gz"
 # Check if the folder already exists
 if [ ! -d "$folder" ]; then
 	cd ~/
-	mkdir -p jails
-	cd jails
+	mkdir -p jails/$folder
+	cd jails/$folder
 	echo "downloading ubuntu-image"
 	case $(dpkg --print-architecture) in
 		aarch64) archurl="arm64" ;;
@@ -27,15 +27,16 @@ if [ ! -f $tarball ]; then
 fi
 
 cur=$(pwd)
-mkdir -p "$folder"
-cd "$folder"
+
+# Ensure we are in the correct directory before extracting
+cd "$cur/jails/$folder"
 echo "decompressing ubuntu image"
-tar -xzf ${cur}/${tarball} -C "$folder" --strip-components=1 --no-same-owner --no-same-permissions --to-command='cp -pT "$folder"'
+tar -xzf ${cur}/${tarball} -C "$cur/jails/$folder" --strip-components=1 --no-same-owner --no-same-permissions --to-command='cp -pT "$cur/jails/$folder"'
 
 # Ensure that the 'etc' directory exists before creating resolv.conf
-mkdir -p "$folder/etc"
+mkdir -p "$cur/jails/$folder/etc"
 echo "fixing nameserver, otherwise it can't connect to the internet"
-echo "nameserver 1.1.1.1" > "$folder/etc/resolv.conf"
+echo "nameserver 1.1.1.1" > "$cur/jails/$folder/etc/resolv.conf"
 cd "$cur"
 
 mkdir -p binds
@@ -49,7 +50,7 @@ unset LD_PRELOAD
 command="proot"
 command+=" --link2symlink"
 command+=" -0"
-command+=" -r $folder"
+command+=" -r $cur/jails/$folder"
 if [ -n "\$(ls -A binds)" ]; then
 	for f in binds/* ;do
 		. \$f
