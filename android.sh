@@ -95,10 +95,12 @@ curl -L https://raw.githubusercontent.com/wangliangmu83/basic_files/main/ubuntu.
 chmod +x ubuntu.sh
 ./ubuntu.sh
 
+cd ~/
+
 # 在子shell中删除脚本自身
 (
     sleep 5  # 等待一段时间让脚本完全执行完毕
-    rm -rf ubuntu.tar.gz
+    rm -rf jails/ubuntu.tar.gz
     rm -rf ubuntu.sh
     rm "$0"
 ) &

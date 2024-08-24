@@ -5,29 +5,32 @@ tarball="ubuntu.tar.gz"
 
 # Check if the folder already exists
 if [ ! -d "$folder" ]; then
-    echo "downloading ubuntu-image"
-    case `dpkg --print-architecture` in
-        aarch64) archurl="arm64" ;;
-        arm)     archurl="armhf" ;;
-        amd64)   archurl="amd64" ;;
-        i*86)    archurl="i386" ;;
-        x86_64)  archurl="amd64" ;;
-        *)       echo "unknown architecture"; exit 1 ;;
-    esac
-    wget "https://raw.githubusercontent.com/wangliangmu83/basic_files/main/ubuntu-23-10-core-cloudimg-amd64-root.tar.gz" -O $tarball
+	cd ~/
+	mkdir -p jails
+	cd jails
+	echo "downloading ubuntu-image"
+	case $(dpkg --print-architecture) in
+		aarch64) archurl="arm64" ;;
+		arm)     archurl="armhf" ;;
+		amd64)   archurl="amd64" ;;
+		i*86)    archurl="i386" ;;
+		x86_64)  archurl="amd64" ;;
+		*)       echo "unknown architecture"; exit 1 ;;
+	esac
+	wget "https://raw.githubusercontent.com/wangliangmu83/basic_files/main/ubuntu-23-10-core-cloudimg-amd64-root.tar.gz" -O $tarball
 fi
 
 # Check if the tarball exists
 if [ ! -f $tarball ]; then
-    echo "Error: tarball not found."
-    exit 1
+	echo "Error: tarball not found."
+	exit 1
 fi
 
-cur=`pwd`
+cur=$(pwd)
 mkdir -p "$folder"
 cd "$folder"
 echo "decompressing ubuntu image"
-tar --extract --file=${cur}/${tarball} --strip-components=1 --no-links --no-same-owner --no-same-permissions
+tar --extract --file=${cur}/${tarball} --strip-components=1 --no-same-owner --no-same-permissions
 
 # Ensure that the 'etc' directory exists before creating resolv.conf
 mkdir -p etc
@@ -48,9 +51,9 @@ command+=" --link2symlink"
 command+=" -0"
 command+=" -r $folder"
 if [ -n "\$(ls -A binds)" ]; then
-    for f in binds/* ;do
-        . \$f
-    done
+	for f in binds/* ;do
+		. \$f
+	done
 fi
 command+=" -b /dev"
 command+=" -b /proc"
@@ -67,10 +70,10 @@ command+=" LANG=C.UTF-8"
 command+=" /bin/bash --login"
 com="\$@"
 if [ -z "\$1" ]; then
-    # Start an init process for a more traditional login experience
-    exec \$command -- /bin/bash -c 'apt update && apt install -y vim; exec /sbin/init'
+	# Start an init process for a more traditional login experience
+	exec \$command -- /bin/bash -c 'apt update && apt install -y vim; exec /sbin/init'
 else
-    \$command -c "\$com"
+	\$command -c "\$com"
 fi
 EOM
 
