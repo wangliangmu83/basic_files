@@ -14,7 +14,6 @@ if [ ! -d "$folder" ]; then
 		x86_64)  archurl="amd64" ;;
 		*)       echo "unknown architecture"; exit 1 ;;
 	esac
-	wget "https://raw.githubusercontent.com/wangliangmu83/basic_files/main/ubuntu-23-10-core-cloudimg-amd64-root.tar.gz" -O $tarball
 fi
 
 # Check if the tarball exists
@@ -27,7 +26,7 @@ cur=`pwd`
 mkdir -p "$folder"
 cd "$folder"
 echo "decompressing ubuntu image"
-tar -xf ${cur}/${tarball} --exclude='dev' --no-same-owner || true
+tar -xf ${cur}/${tarball} --exclude='dev' --no-same-owner --no-same-permissions || true
 
 # Ensure that the 'etc' directory exists before creating resolv.conf
 mkdir -p etc
