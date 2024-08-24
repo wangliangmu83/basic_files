@@ -22,7 +22,13 @@ cur=$(pwd)
 mkdir -p "$folder"
 cd "$folder"
 echo "decompressing ubuntu image"
-tar -xzf "${cur}/${tarball}" --strip-components=1 --no-same-owner --no-same-permissions
+tar -xzf "${cur}/${tarball}" --strip-components=1 --no-same-owner --no-same-permissions --no-links
+
+# Check for successful extraction
+if [ $? -ne 0 ]; then
+	echo "Error: Extraction failed."
+	exit 1
+fi
 
 # Ensure that the 'root' directory exists
 mkdir -p "$cur/$folder/root"
@@ -47,7 +53,7 @@ command+=" --link2symlink"
 command+=" -0"
 command+=" -r ${cur}/$folder"
 if [ -n "\$(ls -A binds)" ]; then
-	for f in binds/* ;do
+	for f in binds/* ; do
 		. \$f
 	done
 fi
