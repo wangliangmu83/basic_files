@@ -76,22 +76,9 @@ passwd
 # 重启SSH服务使配置生效
 pkill -HUP sshd
 
-# 安装proot和wget
-pkg install proot wget -y
-
-mkdir -p ~/jails
-cd ~/jails
-
-# 下载并执行Ubuntu安装脚本
-curl -L https://raw.githubusercontent.com/wangliangmu83/basic_files/main/ubuntu.sh -o ubuntu.sh
-chmod +x ubuntu.sh
-./ubuntu.sh
-
 # 在子shell中删除脚本自身
 (
     sleep 5  # 等待一段时间让脚本完全执行完毕
-    rm -rf ~/jails/ubuntu.tar.gz
-    rm -rf ~/jails/ubuntu.sh
     rm "$0"
 ) &
 echo "脚本将很快被删除。"
