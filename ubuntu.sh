@@ -23,8 +23,11 @@ mkdir -p "$folder"
 cd "$folder"
 echo "decompressing ubuntu image"
 
-# Try to extract without hard links using -N option
-tar -xzf "${cur}/${tarball}" --strip-components=1 --no-same-owner --no-same-permissions -N 0
+# Extract files one by one using cp command to avoid hard links
+tar -tzf "${cur}/${tarball}" --strip-components=1 | while read file; do
+	tar -xzvf "${cur}/${tarball}" -C . --strip-components=1 --wildcards "${file}"
+	cp -al "${file}"
+done
 
 # Check for successful extraction
 if [ $? -ne 0 ]; then
