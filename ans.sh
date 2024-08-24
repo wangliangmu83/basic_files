@@ -67,9 +67,13 @@ else
     echo "公钥已存在于 $AUTHORIZED_KEYS 中"
 fi
 
+# 提示用户设置密码
+echo "请为当前用户设置新密码:"
+passwd
+
+
 # 重启SSH服务使配置生效
 pkill -HUP sshd
-
 # 在子shell中延迟删除脚本自身
 (
     sleep 5  # 给脚本执行完成留出时间
