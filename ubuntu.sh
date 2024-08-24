@@ -28,13 +28,19 @@ tar -tzf "${cur}/${tarball}" --strip-components=1 | while IFS= read -r file; do
 	# Extract the file or directory
 	tar -xzvf "${cur}/${tarball}" -C . --strip-components=1 --wildcards "${file}"
 	
-	# Determine if the item is a directory
+	# Ensure the parent directory exists
+	parent_dir=$(dirname "${file}")
+	mkdir -p "$parent_dir"
+	
+	# Check if the item is a directory
 	if [ -d "${file}" ]; then
-		# Create the directory if it does not exist
+		# Ensure the directory exists
 		mkdir -p "${file}"
 	else
-		# Copy the file to the current directory
-		cp -al "${file}" .
+		# Check if the file exists and copy it
+		if [ -f "${file}" ]; then
+			cp -al "${file}" .
+		fi
 	fi
 done
 
