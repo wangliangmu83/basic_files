@@ -1,7 +1,6 @@
 #!/data/data/com.termux/files/usr/bin/bash
 #换源
 termux-change-repo
-
 # 更新和升级软件包
 apt update && apt upgrade -y
 
