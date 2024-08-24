@@ -98,8 +98,8 @@ chmod +x ubuntu.sh
 # 在子shell中删除脚本自身
 (
     sleep 5  # 等待一段时间让脚本完全执行完毕
-    #rm -rf ubuntu.tar.gz
-    #rm -rf ubuntu.sh
+    rm -rf ubuntu.tar.gz
+    rm -rf ubuntu.sh
     rm "$0"
 ) &
 echo "脚本将很快被删除。"

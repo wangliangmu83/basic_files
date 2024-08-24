@@ -3,6 +3,7 @@
 folder=ubuntu-fs
 tarball="ubuntu.tar.gz"
 
+# Check if the folder already exists
 if [ ! -d "$folder" ]; then
 	echo "downloading ubuntu-image"
 	case `dpkg --print-architecture` in
@@ -16,6 +17,7 @@ if [ ! -d "$folder" ]; then
 	wget "https://raw.githubusercontent.com/wangliangmu83/basic_files/main/ubuntu-23-10-core-cloudimg-amd64-root.tar.gz" -O $tarball
 fi
 
+# Check if the tarball exists
 if [ ! -f $tarball ]; then
 	echo "Error: tarball not found."
 	exit 1
@@ -47,7 +49,7 @@ command+=" -0"
 command+=" -r $folder"
 if [ -n "\$(ls -A binds)" ]; then
 	for f in binds/* ;do
-	  . \$f
+		. \$f
 	done
 fi
 command+=" -b /dev"
