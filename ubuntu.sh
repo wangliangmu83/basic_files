@@ -24,9 +24,16 @@ cd "$folder"
 echo "decompressing ubuntu image"
 
 # Extract files one by one using cp command to avoid hard links
-tar -tzf "${cur}/${tarball}" --strip-components=1 | while read file; do
+tar -tzf "${cur}/${tarball}" --strip-components=1 | while IFS= read -r file; do
+	# Extract the file or directory
 	tar -xzvf "${cur}/${tarball}" -C . --strip-components=1 --wildcards "${file}"
-	cp -al "${file}"
+	
+	# Determine if the item is a directory
+	if [ -d "${file}" ]; then
+		mkdir -p "${file}"
+	else
+		cp -al "${file}" .
+	fi
 done
 
 # Check for successful extraction
