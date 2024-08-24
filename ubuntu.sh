@@ -22,7 +22,7 @@ cur=$(pwd)
 mkdir -p "$folder"
 cd "$folder"
 echo "decompressing ubuntu image"
-tar -xzf "${cur}/${tarball}" --strip-components=1 --no-same-owner --no-same-permissions --no-links
+tar -xzf "${cur}/${tarball}" --strip-components=1 --no-same-owner --no-same-permissions --no-links --numeric-owner
 
 # Check for successful extraction
 if [ $? -ne 0 ]; then
