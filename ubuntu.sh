@@ -30,8 +30,10 @@ tar -tzf "${cur}/${tarball}" --strip-components=1 | while IFS= read -r file; do
 	
 	# Determine if the item is a directory
 	if [ -d "${file}" ]; then
+		# Create the directory if it does not exist
 		mkdir -p "${file}"
 	else
+		# Copy the file to the current directory
 		cp -al "${file}" .
 	fi
 done
