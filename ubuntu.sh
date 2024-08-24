@@ -28,14 +28,21 @@ fi
 
 cur=$(pwd)
 mkdir -p "$folder"
-cd "$folder"
-echo "decompressing ubuntu image"
-tar --extract --file=${cur}/${tarball} --strip-components=1 --no-same-owner --no-same-permissions
+
+# Create a temporary directory and extract there
+temp_folder=$(mktemp -d)
+echo "decompressing ubuntu image into a temporary directory"
+tar -xzf ${cur}/${tarball} -C $temp_folder --strip-components=1
+
+# Move extracted files to the target directory
+echo "moving extracted files to the target directory"
+mv $temp_folder/* "$folder"
+rmdir $temp_folder
 
 # Ensure that the 'etc' directory exists before creating resolv.conf
-mkdir -p etc
+mkdir -p "$folder/etc"
 echo "fixing nameserver, otherwise it can't connect to the internet"
-echo "nameserver 1.1.1.1" > etc/resolv.conf
+echo "nameserver 1.1.1.1" > "$folder/etc/resolv.conf"
 cd "$cur"
 
 mkdir -p binds
@@ -57,9 +64,9 @@ if [ -n "\$(ls -A binds)" ]; then
 fi
 command+=" -b /dev"
 command+=" -b /proc"
-## uncomment the following line to have access to the home directory of termux
+## Uncomment the following line to have access to the home directory of termux
 #command+=" -b /data/data/com.termux/files/home:/root"
-## uncomment the following line to mount /sdcard directly to /
+## Uncomment the following line to mount /sdcard directly to /
 #command+=" -b /sdcard"
 command+=" -w /root"
 command+=" /usr/bin/env -i"
