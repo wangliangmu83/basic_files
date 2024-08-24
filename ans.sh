@@ -13,25 +13,6 @@ termux-setup-storage
 # 生成主机密钥
 ssh-keygen -A
 
-# 启动SSH服务
-sshd &
-
-# 提示用户设置密码
-echo "请为当前用户设置新密码:"
-passwd
-
-# 配置bash.bashrc使得sshd服务自动启动
-echo "# 启动SSHD服务" >> /data/data/com.termux/files/usr/etc/bash.bashrc
-echo "/data/data/com.termux/files/usr/bin/sshd" >> /data/data/com.termux/files/usr/etc/bash.bashrc
-
-# 重新加载bash.bashrc
-source /data/data/com.termux/files/usr/etc/bash.bashrc
-
-# 配置sshd_config
-echo "配置sshd_config..."
-echo "PermitRootLogin yes" > /data/data/com.termux/files/usr/etc/ssh/sshd_config
-echo "ListenAddress 0.0.0.0" >> /data/data/com.termux/files/usr/etc/ssh/sshd_config
-echo "PubkeyAuthentication yes" >> /data/data/com.termux/files/usr/etc/ssh/sshd_config
 # SSH 相关路径
 USER=termux
 SSH_DIR="/data/data/com.termux/files/home/.ssh"
@@ -80,11 +61,28 @@ if ! grep -qF "$(cat "$PUBLIC_KEY")" "$AUTHORIZED_KEYS"; then
     cat "$PUBLIC_KEY" >> "$AUTHORIZED_KEYS"
 fi
 
-# 提示信息
-echo "SSH设置完成。您现在可以使用生成的密钥连接。"
+# 配置sshd_config
+echo "配置sshd_config..."
+echo "PermitRootLogin yes" > /data/data/com.termux/files/usr/etc/ssh/sshd_config
+echo "ListenAddress 0.0.0.0" >> /data/data/com.termux/files/usr/etc/ssh/sshd_config
+echo "PubkeyAuthentication yes" >> /data/data/com.termux/files/usr/etc/ssh/sshd_config
+
+# 提示用户设置密码
+echo "请为当前用户设置新密码:"
+passwd
 
 # 重启SSH服务使配置生效
 pkill -HUP sshd
+
+# 配置bash.bashrc使得sshd服务自动启动
+echo "# 启动SSHD服务" >> /data/data/com.termux/files/usr/etc/bash.bashrc
+echo "/data/data/com.termux/files/usr/bin/sshd" >> /data/data/com.termux/files/usr/etc/bash.bashrc
+
+# 重新加载bash.bashrc
+source /data/data/com.termux/files/usr/etc/bash.bashrc
+
+# 提示信息
+echo "SSH设置完成。您现在可以使用生成的密钥连接。"
 
 # 在子shell中删除脚本自身
 (
