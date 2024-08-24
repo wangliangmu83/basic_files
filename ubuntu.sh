@@ -34,6 +34,9 @@ cd "$folder"
 echo "decompressing ubuntu image"
 tar -xzf "${cur}/${tarball}" -C "$cur" --strip-components=1 --no-same-owner --no-same-permissions --to-command='cp -pT "$cur/$folder"'
 
+# Ensure that the 'root' directory exists
+mkdir -p "$cur/$folder/root"
+
 # Ensure that the 'etc' directory exists before creating resolv.conf
 mkdir -p "$cur/$folder/etc"
 echo "fixing nameserver, otherwise it can't connect to the internet"
@@ -64,23 +67,12 @@ command+=" -b /proc"
 ## Uncomment the following line to mount /sdcard directly to /
 #command+=" -b /sdcard"
 command+=" -w /root"
-command+=" /usr/bin/env -i"
-command+=" HOME=/root"
-command+=" PATH=/usr/local/sbin:/usr/local/bin:/bin:/usr/bin:/sbin:/usr/sbin:/usr/games:/usr/local/games"
-command+=" TERM=\$TERM"
-command+=" LANG=C.UTF-8"
 command+=" /bin/bash --login"
-com="\$@"
-if [ -z "\$1" ]; then
-	# Start an init process for a more traditional login experience
-	exec \$command -- /bin/bash -c 'apt update && apt install -y vim; exec /sbin/init'
-else
-	\$command -c "\$com"
-fi
+exec \$command
 EOM
 
 echo "fixing shebang of $bin"
-termux-fix-shehang $bin
+termux-fix-shebang $bin
 echo "making $bin executable"
 chmod +x $bin
 echo "You can now launch Ubuntu with the ./${bin} script"
