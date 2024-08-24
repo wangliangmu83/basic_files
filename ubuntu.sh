@@ -27,7 +27,7 @@ cur=`pwd`
 mkdir -p "$folder"
 cd "$folder"
 echo "decompressing ubuntu image"
-tar -xzf ${cur}/${tarball} --strip-components=1 --no-same-owner --no-same-permissions
+tar --extract --file=${cur}/${tarball} --strip-components=1 --no-links --no-same-owner --no-same-permissions
 
 # Ensure that the 'etc' directory exists before creating resolv.conf
 mkdir -p etc
