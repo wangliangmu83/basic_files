@@ -40,20 +40,22 @@ echo "Initial commit" > README.md
 git add .
 git commit -m "Initial commit"
 
+# 确保目标目录存在
+mkdir -p ~/.ssh
+
+# 复制 authorized_keys 文件
+cp /data/data/com.termux/files/home/.ssh/authorized_keys ~/.ssh/
+
+# 设置适当的权限
+chmod 700 ~/.ssh
+chmod 600 ~/.ssh/authorized_keys
+
 # 执行完成后退出gitsync用户的shell会话
+exit
 EOF_GITSYNC
 
 # 执行完成后退出Ubuntu环境
+exit
 EOF
-
-# 确保目标目录存在
-mkdir -p /data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/ubuntu/home/gitsync/.ssh
-
-# 复制 authorized_keys 文件
-cp /data/data/com.termux/files/home/.ssh/authorized_keys /data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/ubuntu/home/gitsync/.ssh/
-
-# 设置适当的权限
-chmod 700 /data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/ubuntu/home/gitsync/.ssh
-chmod 600 /data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/ubuntu/home/gitsync/.ssh/authorized_keys
 
 # 回到Termux的初始环境
