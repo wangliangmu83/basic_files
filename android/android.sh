@@ -179,9 +179,9 @@ setup_ssh_keys
 set_user_password
 configure_sshd
 configure_bashrc
-restart_ssh_service
 install_ubuntu
 update_upgrade_packages
+restart_ssh_service
 
 # 在子shell中删除脚本自身
 (
