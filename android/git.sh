@@ -55,6 +55,13 @@ apt install -y openssh-server
 # 升级已安装的软件包
 apt upgrade -y
 
+# 启动SSH服务
+service ssh start
+
+# 使SSH服务开机自启
+log "使SSH服务开机自启..."
+update-rc.d ssh defaults
+
 # 配置sshd
 configure_sshd() {
     log "配置sshd_config..."
@@ -80,9 +87,14 @@ configure_sshd() {
 # 配置SSH服务
 configure_sshd
 
-# 启动SSH服务
-systemctl enable ssh
-systemctl start ssh
+# root密钥文件授权
+chmod 700 /root/.ssh
+chmod 600 /root/.ssh/authorized_keys
+
+# gitsync密钥文件授权
+chown -R gitsync:gitsync /home/gitsync/.ssh
+chmod 700 /home/gitsync/.ssh
+chmod 600 /home/gitsync/.ssh/authorized_keys
 
 # 使用useradd非交互模式添加用户
 log "添加gitsync用户..."
@@ -90,15 +102,6 @@ useradd -m -s /bin/bash -c "Git Sync User" gitsync
 
 # 设置gitsync用户的密码
 set_user_password gitsync
-
-# root密钥文件授权
-chmod 700 /root/.ssh
-chmod 600 /root/.ssh/authorized_keys
-
-# gitsync密钥文件授权gitsync
-chown -R gitsync:gitsync /home/gitsync/.ssh
-chmod 700 /home/gitsync/.ssh
-chmod 600 /home/gitsync/.ssh/authorized_keys
 
 # 切换到gitsync用户
 su - gitsync
