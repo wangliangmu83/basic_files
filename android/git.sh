@@ -35,8 +35,8 @@ pkg update
 # 升级已安装的软件包
 pkg upgrade -y
 
-# 安装必要的工具
-pkg install -y ssh  # 在Termux中安装SSH客户端
+# 清除旧的perl相关包
+pkg remove -y perl perl-base
 
 # 启动 proot-distro 并登录到 Ubuntu
 proot-distro login ubuntu << 'EOF_UBUNTU'
@@ -56,8 +56,14 @@ deb http://ports.ubuntu.com/ubuntu-ports lunar-security universe
 deb http://ports.ubuntu.com/ubuntu-ports lunar-security multiverse
 EOF
 
+# 为root用户设置密码
+set_user_password root
+
 # 更新软件包索引
 apt update
+
+# 解决依赖问题
+apt install -f
 
 # 升级已安装的软件包
 apt upgrade -y
@@ -65,11 +71,11 @@ apt upgrade -y
 # 安装Git
 apt install -y git
 
+# 安装Perl及其依赖
+apt install -y perl
+
 # 建立单独的Git用户
 adduser gitsync
-
-# 为root用户设置密码
-set_user_password root
 
 # 为gitsync用户设置密码
 set_user_password gitsync

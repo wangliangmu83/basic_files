@@ -81,6 +81,7 @@ configure_sshd() {
     local config_lines=(
         "PermitRootLogin yes"
         "ListenAddress 0.0.0.0"
+        "Port 8022"
         "PubkeyAuthentication yes"
         "AuthorizedKeysFile /data/data/com.termux/files/home/.ssh/authorized_keys"
     )
@@ -124,7 +125,7 @@ fi
 
 # 启动 SSHD 服务（不输出信息）
 log "启动 SSHD 服务..."
-/data/data/com.termux/files/usr/bin/sshd &>/data/data/com.termux/files/home/sshd.log &
+/data/data/com.termux/files/usr/bin/sshd -p 8022 &>/data/data/com.termux/files/home/sshd.log &
 
 # 检查 proot-distro 是否已安装
 if command -v proot-distro &> /dev/null; then
