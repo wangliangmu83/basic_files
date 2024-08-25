@@ -63,17 +63,32 @@ apt update
 # 升级已安装的软件包
 apt upgrade -y
 
-# 安装必要的工具包
-apt install -y debconf-utils dialog libterm-readline-perl
-
-# 安装Git（如果尚未安装）
-apt install -y git
-
 # 自动响应 adduser 命令的提示
 echo -e "gitsync\n\n\n\n\n\n\n\n" | adduser gitsync
 
 # 调用设置密码的函数
 set_user_password
+
+# 安装必要的工具包
+apt install -y dialog
+
+# 尝试安装 debconf-utils 和 libterm-readline-perl
+# 如果找不到软件包，尝试从其他源安装
+if ! apt install -y debconf-utils; then
+    echo "尝试从其他源安装 debconf-utils..."
+    apt install -y software-properties-common
+    add-apt-repository -y ppa:ondrej/php
+    apt update
+    apt install -y debconf-utils
+fi
+
+if ! apt install -y libterm-readline-perl; then
+    echo "尝试从其他源安装 libterm-readline-perl..."
+    apt install -y perl-modules-5.30
+fi
+
+# 安装Git（如果尚未安装）
+apt install -y git
 
 # 切换到gitsync用户
 su - gitsync << 'EOF_GITSYNC'
