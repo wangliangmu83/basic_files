@@ -5,6 +5,7 @@ log() {
     echo "$@"
 }
 
+# 定义函数
 update_upgrade_packages() {
     log "更新并升级现有的包..."
     apt update && apt upgrade -y
