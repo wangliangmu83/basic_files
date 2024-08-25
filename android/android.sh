@@ -59,19 +59,22 @@ setup_ssh_keys() {
     fi
 }
 
-set_user_password() {
+set_user_password() {   
     # 提示用户设置密码
     while true; do
         echo "请输入新密码:"
         passwd
+  
+        # 检查passwd命令的退出状态码
         if [ $? -eq 0 ]; then
-            echo "密码设置成功!"
-            break
+          echo "密码设置成功!"
+          break # 密码设置成功后退出循环
         else
-            echo "密码设置失败，请重新尝试。"
-        fi
-    fi  # 注意这里，确保循环正确结束
+          echo "密码设置失败，请重新尝试。"
+         fi
+    done
 }
+
 
 configure_sshd() {
     # 配置sshd_config
