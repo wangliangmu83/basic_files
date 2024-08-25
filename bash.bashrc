@@ -42,9 +42,9 @@ else
             echo "Termux 已登录到 Ubuntu"
         else
             echo "Termux 未登录到 Ubuntu"
-            # 尝试登录 Ubuntu
-            echo "尝试进入 Ubuntu 发行版"
-            proot-distro login ubuntu
+            # 如果手机 Termux 未登录到 Ubuntu，则 SSH 连接也不登录到 Ubuntu
+            echo "SSH 连接时不登录到 Ubuntu"
+            exit 0
         fi
     fi
 fi
