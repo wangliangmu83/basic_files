@@ -63,11 +63,14 @@ apt update
 # 升级已安装的软件包
 apt upgrade -y
 
+# 安装必要的工具包
+apt install -y debconf-utils dialog libterm-readline-perl
+
 # 安装Git（如果尚未安装）
 apt install -y git
 
-# 建立单独的Git用户
-adduser gitsync
+# 自动响应 adduser 命令的提示
+echo -e "gitsync\n\n\n\n\n\n\n\n" | adduser gitsync
 
 # 调用设置密码的函数
 set_user_password
