@@ -42,9 +42,6 @@ if ! grep -q "$UBUNTU_LOGIN_CMD" "$BASHRC_FILE"; then
     echo "$UBUNTU_LOGIN_CMD" >> "$BASHRC_FILE"
 fi
 
-# 重新加载bash.bashrc
-source "$BASHRC_FILE"
-
 # 重启SSH服务使配置生效
 pkill -HUP sshd
 
