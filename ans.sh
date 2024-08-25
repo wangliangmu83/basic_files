@@ -17,8 +17,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # SSH相关路径
-USER=termux
-SSH_DIR="/data/data/com.termux/files/home/$USER/.ssh"
+SSH_DIR="/data/data/com.termux/files/home/.ssh"
 AUTHORIZED_KEYS="$SSH_DIR/authorized_keys"
 PRIVATE_KEY="$SSH_DIR/id_rsa"
 PUBLIC_KEY="$SSH_DIR/id_rsa.pub"

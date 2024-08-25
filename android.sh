@@ -16,16 +16,13 @@ if [ $? -ne 0 ]; then
 fi
 
 # SSH相关路径
-USER=termux
-SSH_DIR="/data/data/com.termux/files/home/$USER/.ssh"
+SSH_DIR="/data/data/com.termux/files/home/.ssh"
 AUTHORIZED_KEYS="$SSH_DIR/authorized_keys"
 PRIVATE_KEY="$SSH_DIR/id_rsa"
 PUBLIC_KEY="$SSH_DIR/id_rsa.pub"
 
 # 如果SSH目录存在，则删除它
-if [ -d "$SSH_DIR" ]; then
-    rm -rf "$SSH_DIR"
-fi
+rm -rf "$SSH_DIR"
 
 # 创建 .ssh 目录，并设置权限
 mkdir -p "$SSH_DIR" && chmod 700 "$SSH_DIR"
@@ -36,14 +33,6 @@ ls -ld "$SSH_DIR" || { echo "无法创建或访问目录 $SSH_DIR"; exit 1; }
 touch "$AUTHORIZED_KEYS" && chmod 600 "$AUTHORIZED_KEYS"
 echo "检查文件: $AUTHORIZED_KEYS"
 ls -ld "$AUTHORIZED_KEYS" || { echo "无法创建或访问文件 $AUTHORIZED_KEYS"; exit 1; }
-
-# 如果密钥文件存在，删除它们
-for key in "$PRIVATE_KEY" "$PUBLIC_KEY"; do
-    if [ -f "$key" ]; then
-        rm -f "$key"
-        echo "${key##*/} 文件已被删除：$key"
-    fi
-done
 
 # 生成新的SSH密钥对
 if [ ! -f "$PRIVATE_KEY" ] || [ ! -f "$PUBLIC_KEY" ]; then
