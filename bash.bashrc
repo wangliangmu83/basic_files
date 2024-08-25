@@ -28,13 +28,17 @@ export TERMUX_PREFIX=/data/data/com.termux/files
 if ! command -v proot-distro &> /dev/null; then
     echo "proot-distro 未安装，跳过相关操作..."
 else
-    # 根据 SSH 连接状态决定是否进入环境
-    if [ -z "$SSH_CONNECTION" ]; then
-        # 本地登录，直接执行 proot-distro login 命令
-        echo "本地登录，尝试进入发行版"
-        proot-distro login ubuntu
+    # 获取 proot-distro 当前会话列表
+    PROOT_DISTRO_SESSIONS=$(proot-distro sessions 2>/dev/null)
+
+    # 检查是否有活动的 Ubuntu 会话
+    if [[ "$PROOT_DISTRO_SESSIONS" =~ "ubuntu.*?running" ]]; then
+        echo "Termux 已登录到 Ubuntu"
     else
-        echo "SSH 连接，保持在当前环境"
+        echo "Termux 未登录到 Ubuntu"
+        # 尝试登录 Ubuntu
+        echo "尝试进入 Ubuntu 发行版"
+        proot-distro login ubuntu
     fi
 fi
 
