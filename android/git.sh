@@ -91,17 +91,17 @@ configure_sshd
 chmod 700 /root/.ssh
 chmod 600 /root/.ssh/authorized_keys
 
-# gitsync密钥文件授权
-chown -R gitsync:gitsync /home/gitsync/.ssh
-chmod 700 /home/gitsync/.ssh
-chmod 600 /home/gitsync/.ssh/authorized_keys
-
 # 使用useradd非交互模式添加用户
 log "添加gitsync用户..."
 useradd -m -s /bin/bash -c "Git Sync User" gitsync
 
 # 设置gitsync用户的密码
 set_user_password gitsync
+
+# gitsync密钥文件授权
+chmod 700 /home/gitsync/.ssh
+chmod 600 /home/gitsync/.ssh/authorized_keys
+chown -R gitsync:gitsync /home/gitsync/.ssh
 
 # 切换到gitsync用户
 su - gitsync
@@ -114,6 +114,8 @@ git config --global init.defaultBranch main
 
 # 执行完成后退出gitsync用户的shell会话
 exit
+
+
 
 # 执行完成后退出Ubuntu环境
 exit
