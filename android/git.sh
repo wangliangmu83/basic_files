@@ -12,8 +12,10 @@ pkg install -y coreutils  # 确保有coreutils
 # 启动 proot-distro 并登录到 Ubuntu
 proot-distro login ubuntu << 'EOF_UBUNTU'
 
-# 将外部定义的函数导入到Ubuntu环境中
-source <(echo '
+# 安装expect
+apt install -y expect
+
+# 定义设置密码的函数
 set_user_password() {
     local user=$1
     log "设置用户密码..."
@@ -30,8 +32,15 @@ set_user_password() {
             continue
         fi
 
-        # 使用echo命令来传递密码给passwd命令
-        echo "$new_password" | passwd --stdin $user
+        # 使用expect来处理交互式输入
+        expect -c "
+            spawn passwd $user
+            expect \"New password:\"
+            send \"$new_password\r\"
+            expect \"Retype new password:\"
+            send \"$new_password\r\"
+            expect eof
+        "
         if [ $? -eq 0 ]; then
             log "密码设置成功!"
             break
@@ -39,7 +48,7 @@ set_user_password() {
             log "密码设置失败，请重新尝试。"
         fi
     done
-}')
+}
 
 # 首先修改root的密码
 set_user_password root
