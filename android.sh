@@ -18,61 +18,56 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-#配置sshd_config
-echo "配置sshd_config..."
-SSHD_CONFIG_FILE="/data/data/com.termux/files/usr/etc/ssh/sshd_config"
+# 配置sshd_config
+configure_sshd() {
+    local SSHD_CONFIG_FILE="/data/data/com.termux/files/usr/etc/ssh/sshd_config"
+    local config_lines=(
+        "PermitRootLogin yes"
+        "ListenAddress 0.0.0.0"
+        "PubkeyAuthentication yes"
+        "AuthorizedKeysFile /data/data/com.termux/files/home/.ssh/authorized_keys"
+    )
 
-# 检查并添加配置项
-if ! grep -q "^PermitRootLogin yes" "$SSHD_CONFIG_FILE"; then
-    echo "PermitRootLogin yes" >> "$SSHD_CONFIG_FILE"
-fi
-
-if ! grep -q "^ListenAddress 0.0.0.0" "$SSHD_CONFIG_FILE"; then
-    echo "ListenAddress 0.0.0.0" >> "$SSHD_CONFIG_FILE"
-fi
-
-if ! grep -q "^PubkeyAuthentication yes" "$SSHD_CONFIG_FILE"; then
-    echo "PubkeyAuthentication yes" >> "$SSHD_CONFIG_FILE"
-fi
-
-if ! grep -q "^AuthorizedKeysFile /data/data/com.termux/files/home/.ssh/authorized_keys" "$SSHD_CONFIG_FILE"; then
-    echo "AuthorizedKeysFile /data/data/com.termux/files/home/.ssh/authorized_keys" >> "$SSHD_CONFIG_FILE"
-fi
+    for line in "${config_lines[@]}"; do
+        if ! grep -q "^${line}$" "$SSHD_CONFIG_FILE"; then
+            echo "${line}" >> "$SSHD_CONFIG_FILE"
+        fi
+    done
+}
 
 # 配置bash.bashrc使得sshd服务自动启动
-BASHRC_FILE="/data/data/com.termux/files/usr/etc/bash.bashrc"
-SSHD_START_CMD="/data/data/com.termux/files/usr/bin/sshd"
-UBUNTU_LOGIN_CMD="proot-distro login ubuntu"
+configure_bashrc() {
+    local BASHRC_FILE="/data/data/com.termux/files/usr/etc/bash.bashrc"
+    local SSHD_START_CMD="/data/data/com.termux/files/usr/bin/sshd"
+    local UBUNTU_LOGIN_CMD="proot-distro login ubuntu"
 
-# 添加启动SSHD服务的命令
-if ! grep -q "# 启动SSHD服务" "$BASHRC_FILE"; then
-    echo "# 启动SSHD服务" >> "$BASHRC_FILE"
-fi
+    local bashrc_content=(
+        '# 启动SSHD服务'
+        "${SSHD_START_CMD}"
+        'if [ -z "$SSH_CONNECTION" ]; then'
+        '    if [ -z "$IN_UBUNTU" ]; then'
+        '        echo "本地登录，进入Ubuntu"'
+        '        export IN_UBUNTU=1'
+        '        ${UBUNTU_LOGIN_CMD}'
+        '    fi'
+        'else'
+        '    if [ -n "$IN_UBUNTU" ]; then'
+        '        echo "SSH连接，进入Ubuntu"'
+        '        ${UBUNTU_LOGIN_CMD}'
+        '    else'
+        '        echo "SSH连接，保持在Termux"'
+        '    fi'
+        'fi'
+    )
 
-if ! grep -q "$SSHD_START_CMD" "$BASHRC_FILE"; then
-    echo "$SSHD_START_CMD" >> "$BASHRC_FILE"
-fi
+    if ! grep -q "^# 启动SSHD服务$" "$BASHRC_FILE"; then
+        echo "${bashrc_content[@]}" >> "$BASHRC_FILE"
+    fi
+}
 
-# 添加进入Ubuntu的命令
-if ! grep -q "if \[ -z \"\$SSH_CONNECTION\" \]; then" "$BASHRC_FILE"; then
-    echo 'if [ -z "$SSH_CONNECTION" ]; then' >> "$BASHRC_FILE"
-    echo '    if [ -z "$IN_UBUNTU" ]; then' >> "$BASHRC_FILE"
-    echo '        echo "本地登录，进入Ubuntu"' >> "$BASHRC_FILE"
-    echo '        export IN_UBUNTU=1' >> "$BASHRC_FILE"
-    echo '        proot-distro login ubuntu' >> "$BASHRC_FILE"
-    echo '    fi' >> "$BASHRC_FILE"
-    echo 'else' >> "$BASHRC_FILE"
-    echo '    if [ -n "$IN_UBUNTU" ]; then' >> "$BASHRC_FILE"
-    echo '        echo "SSH连接，进入Ubuntu"' >> "$BASHRC_FILE"
-    echo '        proot-distro login ubuntu' >> "$BASHRC_FILE"
-    echo '    else' >> "$BASHRC_FILE"
-    echo '        echo "SSH连接，保持在Termux"' >> "$BASHRC_FILE"
-    echo '    fi' >> "$BASHRC_FILE"
-    echo 'fi' >> "$BASHRC_FILE"
-fi
-
-# 启动SSH服务
-sshd &
+# 执行配置任务
+configure_sshd
+configure_bashrc
 
 #开始建立密钥
 # SSH相关路径
