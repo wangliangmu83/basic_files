@@ -54,12 +54,6 @@ if ! grep -q "$UBUNTU_LOGIN_CMD" "$BASHRC_FILE"; then
 fi
 
 
-
-
-
-
-
-
 # 重启SSH服务使配置生效
 pkill -HUP sshd
 
