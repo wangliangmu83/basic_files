@@ -69,7 +69,8 @@ set_user_password() {
             break
         else
             echo "密码设置失败，请重新尝试。"
-        fi    
+        fi
+    fi  # 注意这里，确保循环正确结束
 }
 
 configure_sshd() {
