@@ -21,10 +21,6 @@ if ! grep -q "^AuthorizedKeysFile /data/data/com.termux/files/home/.ssh/authoriz
     echo "AuthorizedKeysFile /data/data/com.termux/files/home/.ssh/authorized_keys" >> "$SSHD_CONFIG_FILE"
 fi
 
-if ! grep -q "^PasswordAuthentication no" "$SSHD_CONFIG_FILE"; then
-    echo "PasswordAuthentication no" >> "$SSHD_CONFIG_FILE"
-fi
-
 # 配置bash.bashrc使得sshd服务自动启动
 BASHRC_FILE="/data/data/com.termux/files/usr/etc/bash.bashrc"
 SSHD_START_CMD="/data/data/com.termux/files/usr/bin/sshd"
