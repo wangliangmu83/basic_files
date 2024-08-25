@@ -17,10 +17,36 @@ set_user_password() {
         else
             # 使用echo命令来传递密码给passwd命令
             echo "$new_password" | proot-distro exec ubuntu -- passwd --stdin $user
-            echo "密码设置成功!"
-            break
+            if [ $? -eq 0 ]; then
+                echo "密码设置成功!"
+                break
+            else
+                echo "设置密码时发生错误，请重试。"
+            fi
         fi
     done
+}
+
+# 配置sshd_config函数
+configure_sshd() {
+    log "配置sshd_config..."
+    local SSHD_CONFIG_FILE="/etc/ssh/sshd_config"
+    local config_lines=(
+        "PermitRootLogin yes"
+        "ListenAddress 0.0.0.0"
+        "Port 8022"
+        "PubkeyAuthentication yes"
+        "AuthorizedKeysFile      .ssh/authorized_keys"
+    )
+
+    for line in "${config_lines[@]}"; do
+        if ! grep -q "^${line}$" "$SSHD_CONFIG_FILE"; then
+            echo "${line}" >> "$SSHD_CONFIG_FILE"
+        fi
+    done
+
+    # 设置适当的权限
+    chmod 600 "$SSHD_CONFIG_FILE"
 }
 
 # 更新Termux中的软件包索引
@@ -34,6 +60,9 @@ pkg install -y coreutils  # 确保有coreutils
 
 # 启动 proot-distro 并登录到 Ubuntu
 proot-distro login ubuntu << 'EOF_UBUNTU'
+
+# 首先修改root的密码
+set_user_password root
 
 # 更新软件包索引
 apt update
@@ -53,14 +82,30 @@ apt install -y perl
 # 安装SSH客户端
 apt install -y openssh-client
 
+# 配置sshd
+configure_sshd
+
+# 启动SSH服务
+service ssh start
+
 # 建立单独的Git用户
 adduser gitsync
 
-# 为root用户设置密码
-set_user_password root
-
 # 为gitsync用户设置密码
 set_user_password gitsync
+
+# 复制密钥文件到root用户
+mkdir -p /root/.ssh
+cp /data/data/com.termux/files/home/.ssh/authorized_keys /root/.ssh/
+chmod 700 /root/.ssh
+chmod 600 /root/.ssh/authorized_keys
+
+# 复制密钥文件到gitsync用户
+mkdir -p /home/gitsync/.ssh
+cp /data/data/com.termux/files/home/.ssh/authorized_keys /home/gitsync/.ssh/
+chown -R gitsync:gitsync /home/gitsync/.ssh
+chmod 700 /home/gitsync/.ssh
+chmod 600 /home/gitsync/.ssh/authorized_keys
 
 # 切换到gitsync用户
 su - gitsync << 'EOF_GITSYNC'
@@ -75,16 +120,6 @@ git config --global init.defaultBranch main
 echo "Initial commit" > README.md
 git add .
 git commit -m "Initial commit"
-
-# 确保目标目录存在
-mkdir -p ~/.ssh
-
-# 假设Termux用户已经有authorized_keys文件
-cp /data/data/com.termux/files/home/.ssh/authorized_keys ~/.ssh/
-
-# 设置适当的权限
-chmod 700 ~/.ssh
-chmod 600 ~/.ssh/authorized_keys
 
 # 执行完成后退出gitsync用户的shell会话
 exit
