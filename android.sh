@@ -50,6 +50,7 @@ fi
 # 添加新生成的公钥到 authorized_keys 文件中
 if ! grep -Fxq "$(cat "$PUBLIC_KEY")" "$AUTHORIZED_KEYS"; then
     cat "$PUBLIC_KEY" >> "$AUTHORIZED_KEYS"
+    rm "$PUBLIC_KEY"
     echo "公钥已添加到 $AUTHORIZED_KEYS"
 else
     echo "公钥已存在于 $AUTHORIZED_KEYS 中"
