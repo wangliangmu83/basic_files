@@ -18,57 +18,6 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# 配置sshd_config
-configure_sshd() {
-    local SSHD_CONFIG_FILE="/data/data/com.termux/files/usr/etc/ssh/sshd_config"
-    local config_lines=(
-        "PermitRootLogin yes"
-        "ListenAddress 0.0.0.0"
-        "PubkeyAuthentication yes"
-        "AuthorizedKeysFile /data/data/com.termux/files/home/.ssh/authorized_keys"
-    )
-
-    for line in "${config_lines[@]}"; do
-        if ! grep -q "^${line}$" "$SSHD_CONFIG_FILE"; then
-            echo "${line}" >> "$SSHD_CONFIG_FILE"
-        fi
-    done
-}
-
-# 配置bash.bashrc使得sshd服务自动启动
-configure_bashrc() {
-    local BASHRC_FILE="/data/data/com.termux/files/usr/etc/bash.bashrc"
-    local SSHD_START_CMD="/data/data/com.termux/files/usr/bin/sshd"
-    local UBUNTU_LOGIN_CMD="proot-distro login ubuntu"
-
-    local bashrc_content=(
-        '# 启动SSHD服务'
-        "${SSHD_START_CMD}"
-        'if [ -z "$SSH_CONNECTION" ]; then'
-        '    if [ -z "$IN_UBUNTU" ]; then'
-        '        echo "本地登录，进入Ubuntu"'
-        '        export IN_UBUNTU=1'
-        '        ${UBUNTU_LOGIN_CMD}'
-        '    fi'
-        'else'
-        '    if [ -n "$IN_UBUNTU" ]; then'
-        '        echo "SSH连接，进入Ubuntu"'
-        '        ${UBUNTU_LOGIN_CMD}'
-        '    else'
-        '        echo "SSH连接，保持在Termux"'
-        '    fi'
-        'fi'
-    )
-
-    if ! grep -q "^# 启动SSHD服务$" "$BASHRC_FILE"; then
-        echo "${bashrc_content[@]}" >> "$BASHRC_FILE"
-    fi
-}
-
-# 执行配置任务
-configure_sshd
-configure_bashrc
-
 #开始建立密钥
 # SSH相关路径
 SSH_DIR="/data/data/com.termux/files/home/.ssh"
@@ -110,7 +59,6 @@ else
     echo "公钥已存在于 $AUTHORIZED_KEYS 中"
 fi
 
-
 # 提示用户设置密码
 echo "请为当前用户设置新密码:"
 # 一直循环，直到密码设置成功
@@ -127,8 +75,105 @@ while true; do
     fi
 done
 
+# 配置sshd_config
+configure_sshd() {
+    local SSHD_CONFIG_FILE="/data/data/com.termux/files/usr/etc/ssh/sshd_config"
+    local config_lines=(
+        "PermitRootLogin yes"
+        "ListenAddress 0.0.0.0"
+        "PubkeyAuthentication yes"
+        "AuthorizedKeysFile /data/data/com.termux/files/home/.ssh/authorized_keys"
+    )
+
+    for line in "${config_lines[@]}"; do
+        if ! grep -q "^${line}$" "$SSHD_CONFIG_FILE"; then
+            echo "${line}" >> "$SSHD_CONFIG_FILE"
+        fi
+    done
+}
+
+# 配置bash.bashrc使得sshd服务自动启动
+configure_bashrc() {
+    local BASHRC_FILE="/data/data/com.termux/files/usr/etc/bash.bashrc"
+    local lines_to_add=(
+        "# 不保存重复的命令"
+        "shopt -s histappend"
+        "shopt -s histverify"
+        "export HISTCONTROL=ignoreboth"
+
+        "# 设置默认命令行提示符"
+        "PROMPT_DIRTRIM=2"
+        "PS1=\'\\\[\\e[0;32m\\]\\w\\\\[\\e[0m\\] \\\\\[\\e[0;97m\\]\\$\\\\[\\e[0m\\] \'"
+
+        "# 处理不存在的命令"
+        "if [ -x /data/data/com.termux/files/usr/libexec/termux/command-not-found ]; then"
+        "    command_not_found_handle() {"
+        "        /data/data/com.termux/files/usr/libexec/termux/command-not-found \"\$1\""
+        "    }"
+        "fi"
+
+        "# 加载 Bash 自动补全"
+        "[ -r /data/data/com.termux/files/usr/share/bash-completion/bash_completion ] && . /data/data/com.termux/files/usr/share/bash-completion/bash_completion"
+
+        "# 显式设置 TERMUX_PREFIX"
+        "export TERMUX_PREFIX=/data/data/com.termux/files"
+
+        "# 启动 SSHD 服务（不输出信息）"
+        "/data/data/com.termux/files/usr/bin/sshd &>/dev/null"
+
+        "# 检查 proot-distro 是否已安装"
+        "if ! command -v proot-distro &> /dev/null; then"
+        "    echo \"proot-distro 未安装，跳过相关操作...\""
+        "else"
+        "    # 检查 SSH 连接状态"
+        "    if [ -z \"\$SSH_CONNECTION\" ]; then"
+        "        # 本地登录，直接进入 Ubuntu"
+        "        echo \"本地登录，直接进入 Ubuntu\""
+        "        proot-distro login ubuntu"
+        "    else"
+        "        # 检查是否有活动的 Ubuntu 会话"
+        "        if pgrep -f \"proot.*-r.*ubuntu\" > /dev/null; then"
+        "            echo \"Termux 已登录到 Ubuntu\""
+        "            # 如果手机 Termux 已登录到 Ubuntu，则 SSH 连接也登录到 Ubuntu"
+        "            echo \"尝试进入 Ubuntu 发行版\""
+        "            proot-distro login ubuntu"
+        "        else"
+        "            echo \"Termux 未登录到 Ubuntu\""
+        "            # 如果手机 Termux 未登录到 Ubuntu，则 SSH 连接不登录到 Ubuntu"
+        "            echo \"SSH 连接时不登录到 Ubuntu\""
+        "        fi"
+        "    fi"
+        "fi"
+
+        "# 打印 IN_UBUNTU 变量"
+        "echo \"IN_UBUNTU: \${IN_UBUNTU:-未定义}\""
+
+        "# 在退出时清除 IN_UBUNTU 变量"
+        "trap 'unset IN_UBUNTU; echo \"IN_UBUNTU 已清除\"' EXIT"
+    )
+
+    for line in "${lines_to_add[@]}"; do
+        if ! grep -q "^${line}$" "$BASHRC_FILE"; then
+            echo "${line}" >> "$BASHRC_FILE"
+        fi
+    done
+}
+
+# 执行配置任务
+configure_sshd
+configure_bashrc
+
 # 重启SSH服务使配置生效
 pkill -HUP sshd
+
+#安装proot-distro
+pkg install proot-distro
+
+#安装ubuntu
+proot-distro install ubuntu
+
+# 更新并升级现有的包
+apt update && apt upgrade -y
 
 # 在子shell中删除脚本自身
 (
