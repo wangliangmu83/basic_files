@@ -34,11 +34,8 @@ else
         echo "本地登录，直接进入 Ubuntu"
         proot-distro login ubuntu
     else
-        # 获取 proot-distro 当前会话列表
-        PROOT_DISTRO_SESSIONS=$(proot-distro sessions 2>/dev/null)
-
         # 检查是否有活动的 Ubuntu 会话
-        if [[ "$PROOT_DISTRO_SESSIONS" =~ "ubuntu.*?running" ]]; then
+        if pgrep -f "proot.*-r.*ubuntu" > /dev/null; then
             echo "Termux 已登录到 Ubuntu"
             # 如果手机 Termux 已登录到 Ubuntu，则 SSH 连接也登录到 Ubuntu
             echo "尝试进入 Ubuntu 发行版"
