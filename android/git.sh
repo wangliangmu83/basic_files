@@ -34,11 +34,11 @@ pkg update
 # 升级已安装的软件包
 pkg upgrade -y
 
-# 安装Git
-pkg install -y git
+# 安装必要的工具
+pkg install -y proot-distro openssh-client
 
 # 启动 proot-distro 并登录到 Ubuntu
-proot-distro login ubuntu << 'EOF'
+proot-distro login ubuntu << 'EOF_UBUNTU'
 
 # 更改Ubuntu的软件包源为阿里云镜像
 echo "更改Ubuntu的软件包源为阿里云镜像..."
@@ -62,6 +62,46 @@ apt update
 
 # 升级已安装的软件包
 apt upgrade -y
+
+# 安装 SSH 服务
+apt install -y openssh-server
+
+# 配置 sshd_config 文件
+configure_sshd() {
+    # 配置 sshd_config
+    local SSHD_CONFIG_FILE="/etc/ssh/sshd_config"
+    local config_lines=(
+        "PermitRootLogin prohibit-password"
+        "PubkeyAuthentication yes"
+        "PasswordAuthentication no"
+        "AuthorizedKeysFile      .ssh/authorized_keys"
+    )
+
+    for line in "${config_lines[@]}"; do
+        if ! grep -q "^${line}$" "$SSHD_CONFIG_FILE"; then
+            echo "${line}" >> "$SSHD_CONFIG_FILE"
+        fi
+    done
+}
+
+# 配置 sshd_config 文件
+configure_sshd
+
+# 重启 SSH 服务
+service ssh restart
+
+# 确保 root 用户的 .ssh 目录存在
+mkdir -p /root/.ssh
+
+# 复制公钥到 root 用户的 .ssh/authorized_keys 文件
+cp /data/data/com.termux/files/home/.ssh/id_rsa.pub /root/.ssh/authorized_keys
+
+# 设置适当的权限
+chmod 700 /root/.ssh
+chmod 600 /root/.ssh/authorized_keys
+
+# 确保 SSH 服务正在运行
+service ssh status
 
 # 使用 useradd 替代 adduser
 echo -e "gitsync\n\n\n\n\n\n\n\n" | useradd -m -s /bin/bash gitsync
@@ -120,6 +160,7 @@ EOF_GITSYNC
 
 # 执行完成后退出Ubuntu环境
 exit
-EOF
+EOF_UBUNTU
 
 # 回到Termux的初始环境
+echo "Ubuntu中的SSH配置已完成。现在您可以通过密钥认证登录root用户。"
