@@ -3,31 +3,70 @@
 # 定义设置密码的函数
 set_user_password() {
     local user=$1
-    # 提示用户设置密码
+    log "设置用户密码..."
     while true; do
-        echo "请输入新密码 (为用户: $user):"
-        read -s -p "" new_password
-        echo
-        echo "请再次输入密码:"
-        read -s -p "" confirm_password
-        echo
-        
-        if [ "$new_password" != "$confirm_password" ]; then
-            echo "密码不匹配，请重新输入！"
+        echo "请输入新密码:"
+        proot-distro exec ubuntu -- passwd $user
+        if [ $? -eq 0 ]; then
+            log "密码设置成功!"
+            break
         else
-            # 使用echo命令来传递密码给passwd命令
-            echo "$new_password" | proot-distro exec ubuntu -- passwd --stdin $user
-            if [ $? -eq 0 ]; then
-                echo "密码设置成功!"
-                break
-            else
-                echo "设置密码时发生错误，请重试。"
-            fi
+            log "密码设置失败，请重新尝试。"
         fi
     done
 }
 
-# 配置sshd_config函数
+# 更新Termux中的软件包索引
+pkg update
+
+# 升级已安装的软件包
+pkg upgrade -y
+
+# 安装必要的工具
+pkg install -y coreutils  # 确保有coreutils
+
+# 启动 proot-distro 并登录到 Ubuntu
+proot-distro login ubuntu << 'EOF_UBUNTU'
+
+# 将外部定义的函数导入到Ubuntu环境中
+source <(echo '
+set_user_password() {
+    local user=$1
+    log "设置用户密码..."
+    while true; do
+        echo "请输入新密码:"
+        passwd $user
+        if [ $? -eq 0 ]; then
+            log "密码设置成功!"
+            break
+        else
+            log "密码设置失败，请重新尝试。"
+        fi
+    done
+}')
+
+# 首先修改root的密码
+set_user_password root
+
+# 更新软件包索引
+apt update
+
+# 尝试解决依赖问题
+apt install -f
+
+# 升级已安装的软件包
+apt upgrade -y
+
+# 安装Git
+apt install -y git
+
+# 安装Perl及其依赖
+apt install -y perl
+
+# 安装SSH服务器
+apt install -y openssh-server
+
+# 配置sshd
 configure_sshd() {
     log "配置sshd_config..."
     local SSHD_CONFIG_FILE="/etc/ssh/sshd_config"
@@ -49,44 +88,12 @@ configure_sshd() {
     chmod 600 "$SSHD_CONFIG_FILE"
 }
 
-# 更新Termux中的软件包索引
-pkg update
-
-# 升级已安装的软件包
-pkg upgrade -y
-
-# 安装必要的工具
-pkg install -y coreutils  # 确保有coreutils
-
-# 启动 proot-distro 并登录到 Ubuntu
-proot-distro login ubuntu << 'EOF_UBUNTU'
-
-# 首先修改root的密码
-set_user_password root
-
-# 更新软件包索引
-apt update
-
-# 尝试解决依赖问题
-apt install -f
-
-# 升级已安装的软件包
-apt upgrade -y
-
-# 安装Git
-apt install -y git
-
-# 安装Perl及其依赖
-apt install -y perl
-
-# 安装SSH客户端
-apt install -y openssh-client
-
-# 配置sshd
+# 配置SSH服务
 configure_sshd
 
 # 启动SSH服务
-service ssh start
+systemctl enable ssh
+systemctl start ssh
 
 # 建立单独的Git用户
 adduser gitsync

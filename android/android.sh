@@ -5,11 +5,6 @@ log() {
     echo "$@"
 }
 
-# 定义函数
-setup_termux_repo() {
-    log "开始设置Termux仓库..."
-    termux-change-repo
-}
 
 update_upgrade_packages() {
     log "更新并升级现有的包..."
@@ -161,7 +156,6 @@ restart_ssh_service() {
 }
 
 # 执行配置任务
-setup_termux_repo
 update_upgrade_packages
 install_necessary_packages
 generate_ssh_host_keys
