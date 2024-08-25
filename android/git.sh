@@ -22,10 +22,10 @@ set_user_password() {
     done
 }
 
-# 更改Termux的软件包源为清华大学镜像
-echo "更改Termux的软件包源为清华大学镜像..."
+# 更改Termux的软件包源为阿里云镜像
+echo "更改Termux的软件包源为阿里云镜像..."
 cat > $PREFIX/etc/apt/sources.list << EOF
-deb http://mirrors.tuna.tsinghua.edu.cn/termux stable main
+deb http://mirrors.aliyun.com/termux stable main
 EOF
 
 # 更新Termux中的软件包索引
@@ -40,21 +40,21 @@ pkg install -y git
 # 启动 proot-distro 并登录到 Ubuntu
 proot-distro login ubuntu << 'EOF'
 
-# 更改Ubuntu的软件包源为清华大学镜像
-echo "更改Ubuntu的软件包源为清华大学镜像..."
+# 更改Ubuntu的软件包源为阿里云镜像
+echo "更改Ubuntu的软件包源为阿里云镜像..."
 cat > /etc/apt/sources.list << EOF
-deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal main restricted universe multiverse
-deb-src http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal main restricted universe multiverse
+deb http://mirrors.aliyun.com/ubuntu/ focal main restricted universe multiverse
+deb-src http://mirrors.aliyun.com/ubuntu/ focal main restricted universe multiverse
 
 # 以下为可选的更新源
-deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-updates main restricted universe multiverse
-deb-src http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-updates main restricted universe multiverse
+deb http://mirrors.aliyun.com/ubuntu/ focal-updates main restricted universe multiverse
+deb-src http://mirrors.aliyun.com/ubuntu/ focal-updates main restricted universe multiverse
 
-deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-backports main restricted universe multiverse
-deb-src http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-backports main restricted universe multiverse
+deb http://mirrors.aliyun.com/ubuntu/ focal-backports main restricted universe multiverse
+deb-src http://mirrors.aliyun.com/ubuntu/ focal-backports main restricted universe multiverse
 
-deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-security main restricted universe multiverse
-deb-src http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-security main restricted universe multiverse
+deb http://mirrors.aliyun.com/ubuntu/ focal-security main restricted universe multiverse
+deb-src http://mirrors.aliyun.com/ubuntu/ focal-security main restricted universe multiverse
 EOF
 
 # 更新软件包索引
@@ -63,8 +63,8 @@ apt update
 # 升级已安装的软件包
 apt upgrade -y
 
-# 自动响应 adduser 命令的提示
-echo -e "gitsync\n\n\n\n\n\n\n\n" | adduser gitsync
+# 使用 useradd 替代 adduser
+echo -e "gitsync\n\n\n\n\n\n\n\n" | useradd -m -s /bin/bash gitsync
 
 # 调用设置密码的函数
 set_user_password
