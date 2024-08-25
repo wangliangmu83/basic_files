@@ -156,10 +156,10 @@ restart_ssh_service() {
 }
 
 # 执行配置任务
+configure_storage_permissions
 update_upgrade_packages
 install_necessary_packages
 generate_ssh_host_keys
-configure_storage_permissions
 setup_ssh_keys
 set_user_password
 
