@@ -176,26 +176,26 @@ restart_ssh_service
 
 update_upgrade_packages
 
-# 复制密钥文件到 ubuntu 用户
-mkdir -p /data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/ubuntu/root/.ssh
-cp /.ssh/authorized_keys /data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/ubuntu/root/.ssh/
-if [ $? -eq 0 ]; then
-    echo "/.ssh/authorized_keys 复制到 /data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/ubuntu/root/.ssh/ 成功"
-else
-    echo "复制到 /data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/ubuntu/root/.ssh/ 失败"
-fi
-
 # 复制密钥文件到 gitsync 用户
 mkdir -p /data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/ubuntu/home/gitsync/.ssh
 cp /data/data/com.termux/files/home/.ssh/authorized_keys /data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/ubuntu/home/gitsync/.ssh/
 if [ $? -eq 0 ]; then
-    echo "/data/data/com.termux/files/home/.ssh/authorized_keys 复制到 /data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/ubuntu/home/gitsync/.ssh/ 成功"
+    echo "复制到 /data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/ubuntu/home/gitsync/.ssh/ 成功"
 else
     echo "复制到 /data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/ubuntu/home/gitsync/.ssh/ 失败"
 fi
 
 # 启动 proot-distro 并登录到 Ubuntu
 proot-distro login ubuntu 
+
+# 复制密钥文件到 ubuntu 用户
+mkdir -p root/.ssh
+cp home/gitsync/.ssh/authorized_keys root/.ssh/authorized_keys 
+if [ $? -eq 0 ]; then
+    echo "复制到 /data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/ubuntu/root/.ssh/ 成功"
+else
+    echo "复制到 /data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/ubuntu/root/.ssh/ 失败"
+fi
 
 # 升级已安装的软件包
 apt upgrade -y
