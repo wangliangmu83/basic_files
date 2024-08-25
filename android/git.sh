@@ -9,27 +9,8 @@ pkg upgrade -y
 # 启动 proot-distro 并登录到 Ubuntu
 proot-distro login ubuntu << 'EOF_UBUNTU'
 
-# 检查网络连接状态
-check_network() {
-    local url="http://ports.ubuntu.com"
-    local timeout=10
-    local response=$(curl --silent --output /dev/null --write-out '%{http_code}' --connect-timeout $timeout $url)
-    if [ "$response" -ne 200 ]; then
-        echo "网络连接不稳定，请检查您的网络设置。"
-        exit 1
-    fi
-}
-
-# 检查网络连接
-check_network
-
 # 更新软件包索引
 apt update
-
-# 如果更新失败，则尝试重试
-while ! apt update; do
-    echo "APT 更新失败，尝试重试..."
-done
 
 # 安装expect
 apt install -y expect
@@ -40,9 +21,6 @@ passwd
 # 尝试解决依赖问题
 apt install -f
 
-# 升级已安装的软件包
-apt upgrade -y
-
 # 安装Git
 apt install -y git
 
@@ -51,6 +29,9 @@ apt install -y perl
 
 # 安装SSH服务器
 apt install -y openssh-server
+
+# 升级已安装的软件包
+apt upgrade -y
 
 # 配置sshd
 configure_sshd() {
