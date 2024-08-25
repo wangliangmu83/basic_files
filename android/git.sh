@@ -70,15 +70,11 @@ systemctl start ssh
 # 建立单独的Git用户
 adduser gitsync
 
-# 复制密钥文件到root用户
-mkdir -p /root/.ssh
-cp /data/data/com.termux/files/home/.ssh/authorized_keys /root/.ssh/
+# root密钥文件授权
 chmod 700 /root/.ssh
 chmod 600 /root/.ssh/authorized_keys
 
-# 复制密钥文件到gitsync用户
-mkdir -p /home/gitsync/.ssh
-cp /data/data/com.termux/files/home/.ssh/authorized_keys /home/gitsync/.ssh/
+# gitsync密钥文件授权gitsync
 chown -R gitsync:gitsync /home/gitsync/.ssh
 chmod 700 /home/gitsync/.ssh
 chmod 600 /home/gitsync/.ssh/authorized_keys

@@ -175,6 +175,14 @@ restart_ssh_service
 
 update_upgrade_packages
 
+# 复制密钥文件到ubuntu用户
+mkdir -p /data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/ubuntu/root/
+cp /.ssh/authorized_keys /data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/ubuntu/root/.ssh/
+
+# 复制密钥文件到gitsync用户
+mkdir -p /data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/ubuntu/home/gitsync/
+cp /data/data/com.termux/files/home/.ssh/authorized_keys /data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/ubuntu/home/gitsync/.ssh
+
 # 启动 proot-distro 并登录到 Ubuntu
 proot-distro login ubuntu 
 
