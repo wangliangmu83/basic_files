@@ -164,3 +164,7 @@ EOF_UBUNTU
 
 # 回到Termux的初始环境
 echo "Ubuntu中的SSH配置已完成。现在您可以通过密钥认证登录root用户。"
+
+
+
+
