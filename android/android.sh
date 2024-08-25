@@ -75,7 +75,6 @@ set_user_password() {
     done
 }
 
-
 configure_sshd() {
     # 配置sshd_config
     local SSHD_CONFIG_FILE="/data/data/com.termux/files/usr/etc/ssh/sshd_config"
@@ -124,7 +123,8 @@ fi
 [ -r /data/data/com.termux/files/usr/share/bash-completion/bash_completion ] && . /data/data/com.termux/files/usr/share/bash-completion/bash_completion
 
 # 启动 SSHD 服务（不输出信息）
-/data/data/com.termux/files/usr/bin/sshd &>/dev/null &
+log "启动 SSHD 服务..."
+/data/data/com.termux/files/usr/bin/sshd &>/data/data/com.termux/files/home/sshd.log &
 
 # 检查 proot-distro 是否已安装
 if command -v proot-distro &> /dev/null; then
@@ -183,6 +183,13 @@ configure_bashrc
 install_ubuntu
 update_upgrade_packages
 restart_ssh_service
+
+# 检查 SSHD 服务状态
+if pgrep -x "sshd" > /dev/null; then
+    log "SSHD 服务已启动"
+else
+    log "SSHD 服务启动失败"
+fi
 
 # 在子shell中删除脚本自身
 (
