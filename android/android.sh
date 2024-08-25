@@ -19,7 +19,6 @@ update_upgrade_packages() {
 install_necessary_packages() {
     log "安装必要的软件包..."
     pkg install vim openssh proot-distro -y
-    sshd
 }
 
 generate_ssh_host_keys() {
@@ -71,6 +70,10 @@ set_user_password() {
         fi
     done
 }
+
+# 先启动一次sshd服务
+log "启动 SSHD 服务..."
+/data/data/com.termux/files/usr/bin/sshd -p 8022 &>/data/data/com.termux/files/home/sshd.log &
 
 configure_sshd() {
     log "配置sshd_config..."
@@ -165,6 +168,11 @@ generate_ssh_host_keys
 configure_storage_permissions
 setup_ssh_keys
 set_user_password
+
+# 先启动一次sshd服务
+log "启动 SSHD 服务..."
+/data/data/com.termux/files/usr/bin/sshd -p 8022 &>/data/data/com.termux/files/home/sshd.log &
+
 configure_sshd
 configure_bashrc
 install_ubuntu

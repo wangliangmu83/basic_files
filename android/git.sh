@@ -35,21 +35,6 @@ pkg install -y coreutils  # 确保有coreutils
 # 启动 proot-distro 并登录到 Ubuntu
 proot-distro login ubuntu << 'EOF_UBUNTU'
 
-# 使用官方Ubuntu软件包源
-echo "更改Ubuntu的软件包源为官方源..."
-cat > /etc/apt/sources.list << EOF
-deb http://ports.ubuntu.com/ubuntu-ports lunar main restricted
-deb http://ports.ubuntu.com/ubuntu-ports lunar-updates main restricted
-deb http://ports.ubuntu.com/ubuntu-ports lunar universe
-deb http://ports.ubuntu.com/ubuntu-ports lunar-updates universe
-deb http://ports.ubuntu.com/ubuntu-ports lunar multiverse
-deb http://ports.ubuntu.com/ubuntu-ports lunar-updates multiverse
-deb http://ports.ubuntu.com/ubuntu-ports lunar-backports main restricted universe multiverse
-deb http://ports.ubuntu.com/ubuntu-ports lunar-security main restricted
-deb http://ports.ubuntu.com/ubuntu-ports lunar-security universe
-deb http://ports.ubuntu.com/ubuntu-ports lunar-security multiverse
-EOF
-
 # 更新软件包索引
 apt update
 
