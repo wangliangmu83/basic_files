@@ -108,7 +108,7 @@ configure_bashrc() {
         "if [ -x /data/data/com.termux/files/usr/libexec/termux/command-not-found ]; then"
         "    command_not_found_handle() {"
         "        /data/data/com.termux/files/usr/libexec/termux/command-not-found \"$1\";"
-        "    }"
+        "    };"
         "fi"
 
         "# 加载 Bash 自动补全"
@@ -158,6 +158,7 @@ configure_bashrc() {
     done
     log "bash.bashrc配置完成"
 }
+
 install_ubuntu() {
     # 安装ubuntu
     proot-distro install ubuntu
