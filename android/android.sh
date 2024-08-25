@@ -19,6 +19,7 @@ update_upgrade_packages() {
 install_necessary_packages() {
     log "安装必要的软件包..."
     pkg install vim openssh proot-distro -y
+    sshd
 }
 
 generate_ssh_host_keys() {
