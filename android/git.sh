@@ -36,25 +36,24 @@ pkg update
 pkg upgrade -y
 
 # 安装必要的工具
-pkg install -y proot-distro openssh-client
+pkg install -y ssh  # 在Termux中安装SSH客户端
 
 # 启动 proot-distro 并登录到 Ubuntu
 proot-distro login ubuntu << 'EOF_UBUNTU'
 
-# 首先为root用户设置密码
-set_user_password root
-
-# 更改Ubuntu的软件包源
-echo "更改Ubuntu的软件包源为清华大学镜像..."
+# 使用官方Ubuntu软件包源
+echo "更改Ubuntu的软件包源为官方源..."
 cat > /etc/apt/sources.list << EOF
-deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal main restricted universe multiverse
-deb-src http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal main restricted universe multiverse
-deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-updates main restricted universe multiverse
-deb-src http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-updates main restricted universe multiverse
-deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-backports main restricted universe multiverse
-deb-src http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-backports main restricted universe multiverse
-deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-security main restricted universe multiverse
-deb-src http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-security main restricted universe multiverse
+deb http://ports.ubuntu.com/ubuntu-ports lunar main restricted
+deb http://ports.ubuntu.com/ubuntu-ports lunar-updates main restricted
+deb http://ports.ubuntu.com/ubuntu-ports lunar universe
+deb http://ports.ubuntu.com/ubuntu-ports lunar-updates universe
+deb http://ports.ubuntu.com/ubuntu-ports lunar multiverse
+deb http://ports.ubuntu.com/ubuntu-ports lunar-updates multiverse
+deb http://ports.ubuntu.com/ubuntu-ports lunar-backports main restricted universe multiverse
+deb http://ports.ubuntu.com/ubuntu-ports lunar-security main restricted
+deb http://ports.ubuntu.com/ubuntu-ports lunar-security universe
+deb http://ports.ubuntu.com/ubuntu-ports lunar-security multiverse
 EOF
 
 # 更新软件包索引
@@ -68,6 +67,9 @@ apt install -y git
 
 # 建立单独的Git用户
 adduser gitsync
+
+# 为root用户设置密码
+set_user_password root
 
 # 为gitsync用户设置密码
 set_user_password gitsync
