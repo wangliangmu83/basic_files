@@ -96,12 +96,12 @@ configure_bashrc() {
 
         "# 设置默认命令行提示符"
         "PROMPT_DIRTRIM=2"
-        "PS1=\'\\\[\\e[0;32m\\]\\w\\\\[\\e[0m\\] \\\\\[\\e[0;97m\\]\\$\\\\[\\e[0m\\] \'"
+        'PS1=\'\[\e[0;32m\]\w\[\e[0m\] \[\e[0;97m\]\$\[\e[0m\] \''
 
         "# 处理不存在的命令"
         "if [ -x /data/data/com.termux/files/usr/libexec/termux/command-not-found ]; then"
         "    command_not_found_handle() {"
-        "        /data/data/com.termux/files/usr/libexec/termux/command-not-found \"\$1\""
+        "        /data/data/com.termux/files/usr/libexec/termux/command-not-found \"$1\""
         "    }"
         "fi"
 
@@ -119,7 +119,7 @@ configure_bashrc() {
         "    echo \"proot-distro 未安装，跳过相关操作...\""
         "else"
         "    # 检查 SSH 连接状态"
-        "    if [ -z \"\$SSH_CONNECTION\" ]; then"
+        "    if [ -z \"$SSH_CONNECTION\" ]; then"
         "        # 本地登录，直接进入 Ubuntu"
         "        echo \"本地登录，直接进入 Ubuntu\""
         "        proot-distro login ubuntu"
@@ -146,7 +146,7 @@ configure_bashrc() {
     )
 
     for line in "${lines_to_add[@]}"; do
-        if ! grep -q "^${line}$" "$BASHRC_FILE"; then
+        if ! grep -qF -- "${line}" "$BASHRC_FILE"; then
             echo "${line}" >> "$BASHRC_FILE"
         fi
     done
