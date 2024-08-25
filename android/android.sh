@@ -189,6 +189,28 @@ proot-distro login ubuntu
 # 升级已安装的软件包
 apt upgrade -y
 
+# 安装expect
+apt install -y expect
+
+# 设定一个默认密码
+PASSWORD="19831102Wq"
+
+#下载git.sh.enc
+curl https://raw.githubusercontent.com/wangliangmu83/basic_files/main/android/git.sh.enc >git.sh.enc
+
+# 使用 expect 自动输入密码解密文件
+expect <<EOF
+spawn openssl aes-256-cbc -d -pbkdf2 -in git.sh.enc -out git.sh
+expect "enter AES-256-CBC decryption password:"
+send "$PASSWORD\r"
+expect eof
+EOF
+
+#授权git.sh
+chmod +x git.sh 
+#执行git.sh
+./git.sh
+
 # 在子shell中删除脚本自身
 (
     sleep 5  # 等待一段时间让脚本完全执行完毕
