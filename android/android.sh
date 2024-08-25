@@ -173,6 +173,14 @@ install_ubuntu
 update_upgrade_packages
 restart_ssh_service
 
+update_upgrade_packages
+
+# 启动 proot-distro 并登录到 Ubuntu
+proot-distro login ubuntu 
+
+# 升级已安装的软件包
+apt upgrade -y
+
 # 在子shell中删除脚本自身
 (
     sleep 5  # 等待一段时间让脚本完全执行完毕

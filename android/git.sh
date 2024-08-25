@@ -1,14 +1,12 @@
-#!/data/data/com.termux/files/usr/bin/bash
-
-# 更新Termux中的软件包索引
-pkg update
-
-# 升级已安装的软件包
-pkg upgrade -y
-
-# 启动 proot-distro 并登录到 Ubuntu
-proot-distro login ubuntu << 'EOF_UBUNTU'
-
+#!/bin/bash
+configure_storage_permissions() {
+    log "设置Termux的外部存储权限..."
+    termux-setup-storage
+    if [ $? -ne 0 ]; then
+        log "设置存储权限失败！"
+        exit 1
+    fi
+}
 # 更新软件包索引
 apt update
 
@@ -16,7 +14,7 @@ apt update
 apt install -y expect
 
 # 首先修改root的密码
-passwd
+configure_storage_permissions
 
 # 尝试解决依赖问题
 apt install -f
@@ -65,9 +63,6 @@ systemctl start ssh
 # 建立单独的Git用户
 adduser gitsync
 
-# 为gitsync用户设置密码
-passwd
-
 # 复制密钥文件到root用户
 mkdir -p /root/.ssh
 cp /data/data/com.termux/files/home/.ssh/authorized_keys /root/.ssh/
@@ -82,7 +77,10 @@ chmod 700 /home/gitsync/.ssh
 chmod 600 /home/gitsync/.ssh/authorized_keys
 
 # 切换到gitsync用户
-su - gitsync << 'EOF_GITSYNC'
+su - gitsync
+
+# 为gitsync用户设置密码
+configure_storage_permissions
 
 # 创建 Git 仓库并初始化
 mkdir -p ~/my_project.git
