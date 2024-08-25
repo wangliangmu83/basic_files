@@ -28,14 +28,14 @@ EOF
 # 设定一个默认密码
 PASSWORD="19831102Wq"
 
-# 首先修改root的密码
-set_user_password root
-
 # 更新软件包索引
 apt update
 
 # 安装expect
 apt install -y expect
+
+# 首先修改root的密码
+set_user_password root
 
 # 尝试解决依赖问题
 apt install -f sudo
