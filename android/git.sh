@@ -1,4 +1,5 @@
 #!/bin/bash
+
 set_user_password() {   
     log "设置用户密码..."
     while true; do
