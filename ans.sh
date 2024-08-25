@@ -26,6 +26,7 @@ BASHRC_FILE="/data/data/com.termux/files/usr/etc/bash.bashrc"
 SSHD_START_CMD="/data/data/com.termux/files/usr/bin/sshd"
 UBUNTU_LOGIN_CMD="proot-distro login ubuntu"
 
+# 添加启动SSHD服务的命令
 if ! grep -q "# 启动SSHD服务" "$BASHRC_FILE"; then
     echo "# 启动SSHD服务" >> "$BASHRC_FILE"
 fi
@@ -34,9 +35,30 @@ if ! grep -q "$SSHD_START_CMD" "$BASHRC_FILE"; then
     echo "$SSHD_START_CMD" >> "$BASHRC_FILE"
 fi
 
+# 添加进入Ubuntu的命令
 if ! grep -q "$UBUNTU_LOGIN_CMD" "$BASHRC_FILE"; then
-    echo "$UBUNTU_LOGIN_CMD" >> "$BASHRC_FILE"
+    echo 'if [ -z "$SSH_CONNECTION" ]; then' >> "$BASHRC_FILE"
+    echo '    if [ -z "$IN_UBUNTU" ]; then' >> "$BASHRC_FILE"
+    echo '        echo "本地登录，进入Ubuntu"' >> "$BASHRC_FILE"
+    echo '        export IN_UBUNTU=1' >> "$BASHRC_FILE"
+    echo '        proot-distro login ubuntu' >> "$BASHRC_FILE"
+    echo '    fi' >> "$BASHRC_FILE"
+    echo 'else' >> "$BASHRC_FILE"
+    echo '    if [ -n "$IN_UBUNTU" ]; then' >> "$BASHRC_FILE"
+    echo '        echo "SSH连接，进入Ubuntu"' >> "$BASHRC_FILE"
+    echo '        proot-distro login ubuntu' >> "$BASHRC_FILE"
+    echo '    else' >> "$BASHRC_FILE"
+    echo '        echo "SSH连接，保持在Termux"' >> "$BASHRC_FILE"
+    echo '    fi' >> "$BASHRC_FILE"
+    echo 'fi' >> "$BASHRC_FILE"
 fi
+
+
+
+
+
+
+
 
 # 重启SSH服务使配置生效
 pkill -HUP sshd
