@@ -59,27 +59,28 @@ setup_ssh_keys() {
     fi
 }
 
-# 定义设置密码的函数
-set_user_password() {
-    # 提示用户设置密码
-    while true; do
-        echo "请输入新密码:"
-        read -s -p "" new_password
-        echo
-        echo "请再次输入密码:"
-        read -s -p "" confirm_password
-        echo
-        
-        if [ "$new_password" != "$confirm_password" ]; then
-            echo "密码不匹配，请重新输入！"
-        elif ! sudo passwd gitsync <<< "$new_password"; then
-            echo "密码设置失败，请重新尝试。"
-        else
+# 提示用户设置密码
+while true; do
+    echo "请输入新密码:"
+    read -s new_password
+    echo
+    echo "请再次输入密码:"
+    read -s confirm_password
+    echo    
+    if [ "$new_password" != "$confirm_password" ]; then
+        echo "密码不匹配，请重新输入！"
+    else
+        # 使用sudo和echo来设置密码
+        # 注意：这需要sudo没有要求密码的配置
+        echo "$new_password" | sudo -S passwd -stdin $USER
+        if [ $? -eq 0 ]; then
             echo "密码设置成功!"
             break
+        else
+            echo "密码设置失败，请重新尝试。"
         fi
-    done
-}
+    fi
+done
 
 configure_sshd() {
     # 配置sshd_config
