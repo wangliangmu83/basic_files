@@ -1,21 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/bash
 
-# 定义设置密码的函数
-set_user_password() {
-    local user=$1
-    log "设置用户密码..."
-    while true; do
-        echo "请输入新密码:"
-        proot-distro exec ubuntu -- passwd $user
-        if [ $? -eq 0 ]; then
-            log "密码设置成功!"
-            break
-        else
-            log "密码设置失败，请重新尝试。"
-        fi
-    done
-}
-
 # 更新Termux中的软件包索引
 pkg update
 
@@ -35,7 +19,19 @@ set_user_password() {
     log "设置用户密码..."
     while true; do
         echo "请输入新密码:"
-        passwd $user
+        read -s -p "" new_password
+        echo
+        echo "请再次输入密码:"
+        read -s -p "" confirm_password
+        echo
+        
+        if [ "$new_password" != "$confirm_password" ]; then
+            echo "密码不匹配，请重新输入！"
+            continue
+        fi
+
+        # 使用echo命令来传递密码给passwd命令
+        echo "$new_password" | passwd --stdin $user
         if [ $? -eq 0 ]; then
             log "密码设置成功!"
             break
