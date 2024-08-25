@@ -40,11 +40,13 @@ else
         # 检查是否有活动的 Ubuntu 会话
         if [[ "$PROOT_DISTRO_SESSIONS" =~ "ubuntu.*?running" ]]; then
             echo "Termux 已登录到 Ubuntu"
+            # 如果手机 Termux 已登录到 Ubuntu，则 SSH 连接也登录到 Ubuntu
+            echo "尝试进入 Ubuntu 发行版"
+            proot-distro login ubuntu
         else
             echo "Termux 未登录到 Ubuntu"
-            # 如果手机 Termux 未登录到 Ubuntu，则 SSH 连接也不登录到 Ubuntu
+            # 如果手机 Termux 未登录到 Ubuntu，则 SSH 连接不登录到 Ubuntu
             echo "SSH 连接时不登录到 Ubuntu"
-            exit 0
         fi
     fi
 fi
