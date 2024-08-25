@@ -4,6 +4,11 @@
 log() {
     echo "[INFO] $1"
 }
+# 更新软件包索引
+apt update
+
+# 安装expect
+apt install -y expect
 
 # 设置用户密码的函数
 set_user_password() {   
@@ -28,11 +33,6 @@ EOF
 # 设定一个默认密码
 PASSWORD="19831102Wq"
 
-# 更新软件包索引
-apt update
-
-# 安装expect
-apt install -y expect
 
 # 首先修改root的密码
 set_user_password root
