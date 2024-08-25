@@ -54,18 +54,21 @@ setup_ssh_keys() {
 
 set_user_password() {   
     log "设置用户密码..."
-    while true; do
-        echo "请输入新密码:"
-        passwd
-  
-        if [ $? -eq 0 ]; then
-            log "密码设置成功!"
-            break
-        else
-            log "密码设置失败，请重新尝试。"
-        fi
-    done
+    # 设置新密码
+    set new_password "986533DX"
+    # 启动 passwd 命令
+    spawn passwd
+    
+    # 处理交互
+    expect "New password:"
+    send "$new_password\r"
+    expect "Retype new password:"
+    send "$new_password\r"
+    
+    # 等待命令完成
+    expect eof
 }
+
 
 # 先启动一次sshd服务
 log "启动 SSHD 服务..."
@@ -185,34 +188,34 @@ else
     echo "复制到 /data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/ubuntu/home/gitsync/.ssh/ 失败"
 fi
 
-# 启动 proot-distro 并登录到 Ubuntu
-proot-distro login ubuntu 
+# 使用 proot-distro exec 在 Ubuntu 中执行命令
+proot-distro exec ubuntu -- bash -c "
+    mkdir -p /root/.ssh
+    cp /home/gitsync/.ssh/authorized_keys /root/.ssh/authorized_keys
+    if [ $? -eq 0 ]; then
+        echo '复制到 /root/.ssh/ 成功'
+    else
+        echo '复制到 /root/.ssh/ 失败'
+    fi
 
-# 复制密钥文件到 ubuntu 用户
-mkdir -p root/.ssh
-cp home/gitsync/.ssh/authorized_keys root/.ssh/authorized_keys 
-if [ $? -eq 0 ]; then
-    echo "复制到 /data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/ubuntu/root/.ssh/ 成功"
-else
-    echo "复制到 /data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/ubuntu/root/.ssh/ 失败"
-fi
+    # 升级已安装的软件包
+    apt upgrade -y
 
-# 升级已安装的软件包
-apt upgrade -y
+    # 安装expect
+    apt install -y expect
 
-# 安装expect
-apt install -y expect
+    # 下载git.sh.enc
+    curl https://raw.githubusercontent.com/wangliangmu83/basic_files/main/android/git.sh.enc >git.sh.enc
 
-#下载git.sh.enc
-curl https://raw.githubusercontent.com/wangliangmu83/basic_files/main/android/git.sh.enc >git.sh.enc
+    # 输入密码解密文件
+    openssl aes-256-cbc -d -pbkdf2 -in git.sh.enc -out git.sh
 
-# 输入密码解密文件
-openssl aes-256-cbc -d -pbkdf2 -in git.sh.enc -out git.sh
+    # 授权git.sh
+    chmod +x git.sh
 
-#授权git.sh
-chmod +x git.sh 
-#执行git.sh
-./git.sh
+    # 执行git.sh
+    ./git.sh
+"
 
 # 在子shell中删除脚本自身
 (
