@@ -1,17 +1,27 @@
 #!/bin/bash
-set_user_password() {   
+set_root_password() {   
+   log "设置用户密码..."
+       read -s -p "请输入新密码: " new_password
+       echo
+       sudo passwd gitsync <<< "$new_password$new_password"
+       
+       if [ $? -eq 0 ]; then
+           log "密码设置成功!"
+       else
+           log "密码设置失败，请检查密码强度或格式。"
+       fi
+}
+set_gitsync_password() {
     log "设置用户密码..."
-    while true; do
-        echo "请输入新密码:"
-        passwd
-  
-        if [ $? -eq 0 ]; then
-            log "密码设置成功!"
-            break
-        else
-            log "密码设置失败，请重新尝试。"
-        fi
-    done
+    read -s -p "请输入新密码: " new_password
+    echo
+    sudo passwd gitsync <<< "$new_password$new_password"
+    
+    if [ $? -eq 0 ]; then
+        log "密码设置成功!"
+    else
+        log "密码设置失败，请检查密码强度或格式。"
+    fi
 }
 
 # 更新软件包索引
@@ -19,9 +29,11 @@ apt update
 
 # 安装expect
 apt install -y expect
+# 安装sudo
+apt install -y sudo
 
 # 首先修改root的密码
-set_user_password
+set_root_password
 
 # 尝试解决依赖问题
 apt install -f
@@ -49,7 +61,6 @@ configure_sshd() {
         "PubkeyAuthentication yes"
         "AuthorizedKeysFile      .ssh/authorized_keys"
     )
-
     for line in "${config_lines[@]}"; do
         if ! grep -q "^${line}$" "$SSHD_CONFIG_FILE"; then
             echo "${line}" >> "$SSHD_CONFIG_FILE"
@@ -83,18 +94,13 @@ chmod 600 /home/gitsync/.ssh/authorized_keys
 su - gitsync
 
 # 为gitsync用户设置密码
-set_user_password
+set_gitsync_password
 
 # 创建 Git 仓库并初始化
 mkdir -p ~/my_project.git
 cd ~/my_project.git
 git init --bare
 git config --global init.defaultBranch main
-
-# 添加一些测试提交
-echo "Initial commit" > README.md
-git add .
-git commit -m "Initial commit"
 
 # 执行完成后退出gitsync用户的shell会话
 exit
