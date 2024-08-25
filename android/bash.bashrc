@@ -21,6 +21,9 @@ fi
 # 显式设置 TERMUX_PREFIX
 export TERMUX_PREFIX=/data/data/com.termux/files
 
+#设置息屏保持服务
+termux-wake-lock
+
 # 启动 SSHD 服务（不输出信息）
 /data/data/com.termux/files/usr/bin/sshd &>/dev/null
 
