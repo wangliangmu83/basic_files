@@ -23,23 +23,14 @@ set_user_password() {
     done
 }
 
-# 更改Termux的软件包源
-echo "更改Termux的软件包源为清华大学镜像..."
-cat > $PREFIX/etc/apt/sources.list << EOF
-deb http://mirrors.tuna.tsinghua.edu.cn/termux stable main
-EOF
-
 # 更新Termux中的软件包索引
 pkg update
 
 # 升级已安装的软件包
 pkg upgrade -y
 
-# 清除旧的perl相关包
-pkg remove -y perl perl-base
-
 # 安装必要的工具
-pkg install -y openssh-client  # 在Termux中安装SSH客户端
+pkg install -y coreutils  # 确保有coreutils
 
 # 启动 proot-distro 并登录到 Ubuntu
 proot-distro login ubuntu << 'EOF_UBUNTU'
@@ -62,7 +53,7 @@ EOF
 # 更新软件包索引
 apt update
 
-# 解决依赖问题
+# 尝试解决依赖问题
 apt install -f
 
 # 升级已安装的软件包
@@ -73,6 +64,9 @@ apt install -y git
 
 # 安装Perl及其依赖
 apt install -y perl
+
+# 安装SSH客户端
+apt install -y openssh-client
 
 # 建立单独的Git用户
 adduser gitsync
