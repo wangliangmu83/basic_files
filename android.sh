@@ -54,7 +54,7 @@ if ! grep -q "$SSHD_START_CMD" "$BASHRC_FILE"; then
 fi
 
 # 添加进入Ubuntu的命令
-if ! grep -q "$UBUNTU_LOGIN_CMD" "$BASHRC_FILE"; then
+if ! grep -q "if \[ -z \"\$SSH_CONNECTION\" \]; then" "$BASHRC_FILE"; then
     echo 'if [ -z "$SSH_CONNECTION" ]; then' >> "$BASHRC_FILE"
     echo '    if [ -z "$IN_UBUNTU" ]; then' >> "$BASHRC_FILE"
     echo '        echo "本地登录，进入Ubuntu"' >> "$BASHRC_FILE"
@@ -70,7 +70,6 @@ if ! grep -q "$UBUNTU_LOGIN_CMD" "$BASHRC_FILE"; then
     echo '    fi' >> "$BASHRC_FILE"
     echo 'fi' >> "$BASHRC_FILE"
 fi
-
 
 # 启动SSH服务
 sshd &
