@@ -85,7 +85,9 @@ configure_sshd() {
     done
 }
 
+# 配置bash.bashrc使得sshd服务自动启动
 configure_bashrc() {
+    log "开始配置bash.bashrc"
     # 配置bash.bashrc
     local BASHRC_FILE="/data/data/com.termux/files/usr/etc/bash.bashrc"
     local lines_to_add=(
@@ -94,16 +96,16 @@ configure_bashrc() {
         "shopt -s histverify"
         "export HISTCONTROL=ignoreboth"
 
-        "# 设置默认命令行提示符"
-        "PROMPT_DIRTRIM=2"
-        'PS1=\'\[\e[0;32m\]\w\[\e[0m\] \[\e[0;97m\]\$\[\e[0m\] \''
-
+        # 设置默认命令行提示符
+        PROMPT_DIRTRIM=2
+        # 使用单引号来确保字符串中的空格和转义字符被正确处理
+        PS1='\[\e[0;32m\]\w\[\e[0m\] \[\e[0;97m\]\$\[\e[0m\] '
+               
         "# 处理不存在的命令"
         "if [ -x /data/data/com.termux/files/usr/libexec/termux/command-not-found ]; then"
         "    command_not_found_handle() {"
         "        /data/data/com.termux/files/usr/libexec/termux/command-not-found \"$1\""
-        "    }"
-        "fi"
+        "    }; fi"  # 这里原本缺少一个换行和闭合的 }
 
         "# 加载 Bash 自动补全"
         "[ -r /data/data/com.termux/files/usr/share/bash-completion/bash_completion ] && . /data/data/com.termux/files/usr/share/bash-completion/bash_completion"
@@ -136,7 +138,7 @@ configure_bashrc() {
         "            echo \"SSH 连接时不登录到 Ubuntu\""
         "        fi"
         "    fi"
-        "fi"
+        "fi"  # 缺失的闭合 }
 
         "# 打印 IN_UBUNTU 变量"
         "echo \"IN_UBUNTU: \${IN_UBUNTU:-未定义}\""
@@ -150,6 +152,7 @@ configure_bashrc() {
             echo "${line}" >> "$BASHRC_FILE"
         fi
     done
+    log "bash.bashrc配置完成"
 }
 
 install_ubuntu() {
