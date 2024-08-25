@@ -71,7 +71,19 @@ sshd &
 
 # 提示用户设置密码
 echo "请为当前用户设置新密码:"
-passwd
+# 一直循环，直到密码设置成功
+while true; do
+    echo "请输入新密码:"
+    passwd
+
+    # 检查passwd命令的退出状态码
+    if [ $? -eq 0 ]; then
+        echo "密码设置成功!"
+        break # 密码设置成功后退出循环
+    else
+        echo "密码设置失败，请重新尝试。"
+    fi
+done
 
 # 重启SSH服务使配置生效
 pkill -HUP sshd
