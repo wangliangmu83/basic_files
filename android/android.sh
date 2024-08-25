@@ -71,7 +71,7 @@ set_user_password() {
             echo "密码设置失败，请重新尝试。"
         fi
     fi
-done
+}
 
 configure_sshd() {
     # 配置sshd_config
@@ -120,19 +120,11 @@ fi
 # 加载 Bash 自动补全
 [ -r /data/data/com.termux/files/usr/share/bash-completion/bash_completion ] && . /data/data/com.termux/files/usr/share/bash-completion/bash_completion
 
-# 显式设置 TERMUX_PREFIX
-export TERMUX_PREFIX=/data/data/com.termux/files
-
-#设置息屏保持服务
-termux-wake-lock
-
 # 启动 SSHD 服务（不输出信息）
-/data/data/com.termux/files/usr/bin/sshd &>/dev/null
+/data/data/com.termux/files/usr/bin/sshd &>/dev/null &
 
 # 检查 proot-distro 是否已安装
-if ! command -v proot-distro &> /dev/null; then
-    echo "proot-distro 未安装，跳过相关操作..."
-else
+if command -v proot-distro &> /dev/null; then
     # 检查 SSH 连接状态
     if [ -z "\$SSH_CONNECTION" ]; then
         # 本地登录，直接进入 Ubuntu
@@ -151,6 +143,8 @@ else
             echo "SSH 连接时不登录到 Ubuntu"
         fi
     fi
+else
+    echo "proot-distro 未安装，跳过相关操作..."
 fi
 
 # 打印 IN_UBUNTU 变量
@@ -162,6 +156,7 @@ EOF
 
     log "bash.bashrc配置完成"
 }
+
 install_ubuntu() {
     # 安装ubuntu
     proot-distro install ubuntu
