@@ -59,20 +59,11 @@ setup_ssh_keys() {
     fi
 }
 
-# 提示用户设置密码
-while true; do
-    echo "请输入新密码:"
-    read -s new_password
-    echo
-    echo "请再次输入密码:"
-    read -s confirm_password
-    echo    
-    if [ "$new_password" != "$confirm_password" ]; then
-        echo "密码不匹配，请重新输入！"
-    else
-        # 使用sudo和echo来设置密码
-        # 注意：这需要sudo没有要求密码的配置
-        echo "$new_password" | sudo -S passwd -stdin $USER
+set_user_password() {
+    # 提示用户设置密码
+    while true; do
+        echo "请输入新密码:"
+        passwd
         if [ $? -eq 0 ]; then
             echo "密码设置成功!"
             break
