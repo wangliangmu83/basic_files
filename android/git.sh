@@ -1,23 +1,35 @@
 #!/bin/bash
 
-set_user_password() {   
-    log "设置用户密码..."
-    while true; do
-        echo "请输入新密码:"
-        passwd 
-  
-        if [ $? -eq 0 ]; then
-            log "密码设置成功!"
-            break
-        else
-            log "密码设置失败，请重新尝试。"
-        fi
-    done
+# 定义日志函数
+log() {
+    echo "[INFO] $1"
 }
 
+# 设置用户密码的函数
+set_user_password() {   
+    log "设置用户密码..."
+    # 使用expect来自动输入密码
+    expect << EOF
+spawn passwd $1
+expect "New password: "
+send "$PASSWORD\r"
+expect "Retype new password: "
+send "$PASSWORD\r"
+expect eof
+EOF
+
+    if [ $? -eq 0 ]; then
+        log "密码设置成功!"
+    else
+        log "密码设置失败，请重新尝试。"
+    fi
+}
+
+# 设定一个默认密码
+PASSWORD="19831102Wq"
 
 # 首先修改root的密码
-set_user_password
+set_user_password root
 
 # 更新软件包索引
 apt update
@@ -72,8 +84,12 @@ configure_sshd
 systemctl enable ssh
 systemctl start ssh
 
-# 建立单独的Git用户
-adduser gitsync
+# 使用useradd非交互模式添加用户
+log "添加gitsync用户..."
+useradd -m -s /bin/bash -c "Git Sync User" gitsync
+
+# 设置gitsync用户的密码
+set_user_password gitsync
 
 # root密钥文件授权
 chmod 700 /root/.ssh
@@ -87,9 +103,6 @@ chmod 600 /home/gitsync/.ssh/authorized_keys
 # 切换到gitsync用户
 su - gitsync
 
-# 为gitsync用户设置密码
-set_user_password
-
 # 创建 Git 仓库并初始化
 mkdir -p ~/my_project.git
 cd ~/my_project.git
@@ -98,11 +111,9 @@ git config --global init.defaultBranch main
 
 # 执行完成后退出gitsync用户的shell会话
 exit
-EOF_GITSYNC
 
 # 执行完成后退出Ubuntu环境
 exit
-EOF_UBUNTU
 
 # 回到Termux的初始环境
 echo "Ubuntu中的SSH配置已完成。现在您可以通过密钥认证登录root或gitsync用户。"
