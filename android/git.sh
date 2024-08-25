@@ -1,12 +1,19 @@
 #!/bin/bash
-configure_storage_permissions() {
-    log "设置Termux的外部存储权限..."
-    termux-setup-storage
-    if [ $? -ne 0 ]; then
-        log "设置存储权限失败！"
-        exit 1
-    fi
+set_user_password() {   
+    log "设置用户密码..."
+    while true; do
+        echo "请输入新密码:"
+        passwd
+  
+        if [ $? -eq 0 ]; then
+            log "密码设置成功!"
+            break
+        else
+            log "密码设置失败，请重新尝试。"
+        fi
+    done
 }
+
 # 更新软件包索引
 apt update
 
@@ -14,7 +21,7 @@ apt update
 apt install -y expect
 
 # 首先修改root的密码
-configure_storage_permissions
+set_user_password
 
 # 尝试解决依赖问题
 apt install -f
@@ -80,7 +87,7 @@ chmod 600 /home/gitsync/.ssh/authorized_keys
 su - gitsync
 
 # 为gitsync用户设置密码
-configure_storage_permissions
+set_user_password
 
 # 创建 Git 仓库并初始化
 mkdir -p ~/my_project.git
