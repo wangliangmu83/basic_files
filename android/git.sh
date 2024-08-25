@@ -13,6 +13,7 @@ pkg install -y coreutils  # 确保有coreutils
 proot-distro login ubuntu << 'EOF_UBUNTU'
 
 # 安装expect
+apt update
 apt install -y expect
 
 # 定义设置密码的函数
@@ -34,6 +35,7 @@ set_user_password() {
 
         # 使用expect来处理交互式输入
         expect -c "
+            set timeout 30
             spawn passwd $user
             expect \"New password:\"
             send \"$new_password\r\"

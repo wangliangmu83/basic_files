@@ -173,16 +173,6 @@ install_ubuntu
 update_upgrade_packages
 restart_ssh_service
 
-# 检查 SSHD 服务状态
-log "检查 SSHD 服务状态..."
-if pgrep -x "sshd" > /dev/null; then
-    log "SSHD 服务已启动"
-else
-    log "SSHD 服务启动失败"
-    log "检查 SSHD 服务日志..."
-    cat /data/data/com.termux/files/home/sshd.log
-fi
-
 # 在子shell中删除脚本自身
 (
     sleep 5  # 等待一段时间让脚本完全执行完毕
