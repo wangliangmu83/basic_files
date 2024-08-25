@@ -8,6 +8,9 @@ apt update && apt upgrade -y
 # 安装必要的软件包
 pkg install vim openssh -y
 
+# 生成主机密钥
+ssh-keygen -A
+
 # 设置Termux的外部存储权限
 termux-setup-storage
 if [ $? -ne 0 ]; then
@@ -15,6 +18,23 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+# 配置bash.bashrc使得sshd服务自动启动
+echo "# 启动SSHD服务" >> /data/data/com.termux/files/usr/etc/bash.bashrc
+echo "/data/data/com.termux/files/usr/bin/sshd" >> /data/data/com.termux/files/usr/etc/bash.bashrc
+
+# 重新加载bash.bashrc
+source /data/data/com.termux/files/usr/etc/bash.bashrc
+
+# 配置sshd_config
+echo "配置sshd_config..."
+echo "PermitRootLogin yes" > /data/data/com.termux/files/usr/etc/ssh/sshd_config
+echo "ListenAddress 0.0.0.0" >> /data/data/com.termux/files/usr/etc/ssh/sshd_config
+echo "PubkeyAuthentication yes" >> /data/data/com.termux/files/usr/etc/ssh/sshd_config
+
+# 启动SSH服务
+sshd &
+
+#开始建立密钥
 # SSH相关路径
 SSH_DIR="/data/data/com.termux/files/home/.ssh"
 AUTHORIZED_KEYS="$SSH_DIR/authorized_keys"
@@ -55,8 +75,6 @@ else
     echo "公钥已存在于 $AUTHORIZED_KEYS 中"
 fi
 
-# 启动SSH服务
-sshd &
 
 # 提示用户设置密码
 echo "请为当前用户设置新密码:"
