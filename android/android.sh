@@ -5,6 +5,11 @@ log() {
     echo "$@"
 }
 
+# 定义函数
+setup_termux_repo() {
+    log "开始设置Termux仓库..."
+    termux-change-repo
+}
 
 update_upgrade_packages() {
     log "更新并升级现有的包..."
@@ -40,7 +45,7 @@ setup_ssh_keys() {
     mkdir -p "$SSH_DIR" && chmod 700 "$SSH_DIR"
     touch "$AUTHORIZED_KEYS" && chmod 600 "$AUTHORIZED_KEYS"
 
-    if [ ! -f "$PRIVATE_KEY" ] || [ ! -f "$PUBLIC_KEY" ]; then
+    if [ ! -f "$PRIVATE_KEY" ] || [ ! -f "$PUBLIC_KEY" ];then
         ssh-keygen -t rsa -b 4096 -C "king_rush@gmail.com" -f "$PRIVATE_KEY" -N ""
         chmod 600 "$PRIVATE_KEY"
         chmod 644 "$PUBLIC_KEY"
@@ -68,7 +73,7 @@ set_user_password() {
 
 # 先启动一次sshd服务
 log "启动 SSHD 服务..."
-/data/data/com.termux/files/usr/bin/sshd -p 8022 &>/data/data/com.termux/files/home/sshd.log &
+/data/data/com.termux/files/usr/bin/sshd -p 8022 -E /data/data/com.termux/files/home/sshd.log &
 
 configure_sshd() {
     log "配置sshd_config..."
@@ -116,7 +121,7 @@ fi
 
 # 启动 SSHD 服务（不输出信息）
 log "启动 SSHD 服务..."
-/data/data/com.termux/files/usr/bin/sshd -p 8022 &>/data/data/com.termux/files/home/sshd.log &
+/data/data/com.termux/files/usr/bin/sshd -p 8022 -E /data/data/com.termux/files/home/sshd.log &
 
 # 检查 proot-distro 是否已安装
 if command -v proot-distro &> /dev/null; then
@@ -156,6 +161,7 @@ restart_ssh_service() {
 }
 
 # 执行配置任务
+setup_termux_repo
 update_upgrade_packages
 install_necessary_packages
 generate_ssh_host_keys
@@ -165,7 +171,7 @@ set_user_password
 
 # 先启动一次sshd服务
 log "启动 SSHD 服务..."
-/data/data/com.termux/files/usr/bin/sshd -p 8022 &>/data/data/com.termux/files/home/sshd.log &
+/data/data/com.termux/files/usr/bin/sshd -p 8022 -E /data/data/com.termux/files/home/sshd.log &
 
 configure_sshd
 configure_bashrc
