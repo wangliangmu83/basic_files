@@ -1,28 +1,22 @@
 #!/data/data/com.termux/files/usr/bin/bash
 
-set_user_password() {
-    log "设置用户密码..."
+
+set_user_password() {   
+    # 提示用户设置密码
     while true; do
         echo "请输入新密码:"
-        read -s new_password
-        echo    # 打印一个换行符
-        echo "请再次输入新密码:"
-        read -s confirm_password
-        echo    # 打印一个换行符
-
-        if [ "$new_password" = "$confirm_password" ]; then
-            termux-change-password $new_password
-            if [ $? -eq 0 ]; then
-                log "密码设置成功!"
-                break
-            else
-                log "密码设置失败，请重新尝试。"
-            fi
-        else
-            log "两次输入的密码不一致，请重新尝试。"
-        fi
+        passwd  
+        # 检查passwd命令的退出状态码
+        if [ $? -eq 0 ]; then
+          echo "密码设置成功!"
+          break # 密码设置成功后退出循环
+        else           
+          echo "密码设置失败，请重新尝试。"
+         fi
     done
 }
+
+
 
 # 定义函数
 update_upgrade_packages() {
