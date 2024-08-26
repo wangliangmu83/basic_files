@@ -1,12 +1,4 @@
 #!/bin/bash
-
-# 定义日志函数
-log() {
-    echo "$@"
-}
-
-log "配置sshd_config..."
-
 # 定义sshd_config文件路径
 SSHD_CONFIG_FILE="/etc/ssh/sshd_config"
 
