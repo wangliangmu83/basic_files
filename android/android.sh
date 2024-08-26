@@ -189,33 +189,7 @@ else
 fi
 
 # 使用 proot-distro exec 在 Ubuntu 中执行命令
-proot-distro login ubuntu -- bash -c "
-    mkdir -p /root/.ssh
-    cp /home/gitsync/.ssh/authorized_keys /root/.ssh/authorized_keys
-    if [ $? -eq 0 ]; then
-        echo '复制到 /data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/ubuntu/root/.ssh/ 成功'
-    else
-        echo '复制到 /data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/ubuntu/root/.ssh/ 失败'
-    fi
-
-    # 升级已安装的软件包
-    apt upgrade -y
-
-    # 安装expect
-    apt install -y expect
-
-    # 下载git.sh.enc
-    curl https://raw.githubusercontent.com/wangliangmu83/basic_files/main/android/git.sh.enc >git.sh.enc
-
-    # 输入密码解密文件
-    openssl aes-256-cbc -d -pbkdf2 -in git.sh.enc -out git.sh
-
-    # 授权git.sh
-    chmod +x git.sh
-
-    # 执行git.sh
-    ./git.sh
-"
+proot-distro login ubuntu
 
 # 在子shell中删除脚本自身
 (
