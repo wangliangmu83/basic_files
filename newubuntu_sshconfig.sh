@@ -24,3 +24,4 @@ sudo systemctl enable ssh
 
 # 重启SSH服务
 sudo systemctl restart ssh
+
