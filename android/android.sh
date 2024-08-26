@@ -33,17 +33,24 @@ configure_storage_permissions() {
     fi
 }
 
-set_user_password() {   
+set_user_password() {
     log "设置用户密码..."
     while true; do
         echo "请输入新密码:"
-        passwd
-  
-        if [ $? -eq 0 ]; then
-            log "密码设置成功!"
-            break
+        read -s new_password
+        echo "请再次输入新密码:"
+        read -s confirm_password
+
+        if [ "$new_password" = "$confirm_password" ]; then
+            echo -e "$new_password\n$new_password" | passwd
+            if [ $? -eq 0 ]; then
+                log "密码设置成功!"
+                break
+            else
+                log "密码设置失败，请重新尝试。"
+            fi
         else
-            log "密码设置失败，请重新尝试。"
+            log "两次输入的密码不一致，请重新尝试。"
         fi
     done
 }
