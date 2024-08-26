@@ -195,7 +195,10 @@ openssl aes-256-cbc -d -pbkdf2 -in git.sh.enc -out git.sh
 dos2unix git.sh
 
 #移动git.sh 
-cp /data/data/com.termux/files/home/git.sh /data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/ubuntu/home/gitsync/
+mv /data/data/com.termux/files/home/git.sh /data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/ubuntu/home/gitsync/
+
+#整理格式
+dos2unix git.sh
 
 # 使用 proot-distro exec 在 Ubuntu 中执行命令
 proot-distro login ubuntu 
