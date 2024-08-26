@@ -4,9 +4,9 @@ set_user_password() {
     log "设置用户密码..."
     while true; do
         echo "请输入新密码:"
-        read -s new_password
+        read -s "$new_password"
         echo "请再次输入新密码:"
-        read -s confirm_password
+        read -s "$confirm_password"
 
         if [ "$new_password" = "$confirm_password" ]; then
             echo -e "$new_password\n$new_password" | passwd
