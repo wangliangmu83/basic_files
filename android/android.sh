@@ -197,12 +197,13 @@ dos2unix ~/git.sh
 #移动git.sh 
 mv /data/data/com.termux/files/home/git.sh /data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/ubuntu/home/gitsync/
 
-# 使用 proot-distro exec 在 Ubuntu 中执行命令
-proot-distro login ubuntu 
-
 # 在子shell中删除脚本自身
 (
     sleep 5  # 等待一段时间让脚本完全执行完毕
     rm "$0"
 ) &
+
+# 使用 proot-distro exec 在 Ubuntu 中执行命令
+proot-distro login ubuntu 
+
 echo "脚本将很快被删除。"
