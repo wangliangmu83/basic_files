@@ -55,7 +55,7 @@ setup_ssh_keys() {
 set_user_password() {   
     log "设置用户密码..."
     # 设置新密码
-    set new_password "986533DX"
+    set new_password "19831102Wq"
     # 启动 passwd 命令
     spawn passwd
     
@@ -189,13 +189,13 @@ else
 fi
 
 # 使用 proot-distro exec 在 Ubuntu 中执行命令
-proot-distro exec ubuntu -- bash -c "
+proot-distro login ubuntu -- bash -c "
     mkdir -p /root/.ssh
     cp /home/gitsync/.ssh/authorized_keys /root/.ssh/authorized_keys
     if [ $? -eq 0 ]; then
-        echo '复制到 /root/.ssh/ 成功'
+        echo '复制到 /data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/ubuntu/root/.ssh/ 成功'
     else
-        echo '复制到 /root/.ssh/ 失败'
+        echo '复制到 /data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/ubuntu/root/.ssh/ 失败'
     fi
 
     # 升级已安装的软件包
