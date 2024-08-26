@@ -1,10 +1,26 @@
 #!/data/data/com.termux/files/usr/bin/bash
 
-# 定义log函数
-log() {
-    echo "$@"
-}
+set_user_password() {
+    log "设置用户密码..."
+    while true; do
+        echo "请输入新密码:"
+        read -s new_password
+        echo "请再次输入新密码:"
+        read -s confirm_password
 
+        if [ "$new_password" = "$confirm_password" ]; then
+            echo -e "$new_password\n$new_password" | passwd
+            if [ $? -eq 0 ]; then
+                log "密码设置成功!"
+                break
+            else
+                log "密码设置失败，请重新尝试。"
+            fi
+        else
+            log "两次输入的密码不一致，请重新尝试。"
+        fi
+    done
+}
 # 定义函数
 update_upgrade_packages() {
     log "更新并升级现有的包..."
@@ -33,27 +49,6 @@ configure_storage_permissions() {
     fi
 }
 
-set_user_password() {
-    log "设置用户密码..."
-    while true; do
-        echo "请输入新密码:"
-        read -s new_password
-        echo "请再次输入新密码:"
-        read -s confirm_password
-
-        if [ "$new_password" = "$confirm_password" ]; then
-            echo -e "$new_password\n$new_password" | passwd
-            if [ $? -eq 0 ]; then
-                log "密码设置成功!"
-                break
-            else
-                log "密码设置失败，请重新尝试。"
-            fi
-        else
-            log "两次输入的密码不一致，请重新尝试。"
-        fi
-    done
-}
 
 setup_ssh_keys() {
     log "设置SSH密钥..."
@@ -163,6 +158,7 @@ restart_ssh_service() {
 }
 
 # 执行配置任务
+set_user_password
 configure_storage_permissions
 update_upgrade_packages
 install_necessary_packages
@@ -172,10 +168,8 @@ setup_ssh_keys
 # 先启动一次sshd服务
 log "启动 SSHD 服务..."
 /data/data/com.termux/files/usr/bin/sshd -p 8022 -E /data/data/com.termux/files/home/sshd.log &
-
 configure_sshd
 configure_bashrc
-set_user_password
 install_ubuntu
 update_upgrade_packages
 restart_ssh_service
