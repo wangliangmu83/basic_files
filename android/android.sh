@@ -77,7 +77,6 @@ setup_ssh_keys() {
 }
 
 
-
 configure_sshd() {
     log "配置sshd_config..."
     local SSHD_CONFIG_FILE="/data/data/com.termux/files/usr/etc/ssh/sshd_config"
@@ -166,7 +165,6 @@ restart_ssh_service() {
 # 执行配置任务
 configure_storage_permissions
 update_upgrade_packages
-set_user_password
 install_necessary_packages
 generate_ssh_host_keys
 setup_ssh_keys
@@ -177,6 +175,7 @@ log "启动 SSHD 服务..."
 
 configure_sshd
 configure_bashrc
+set_user_password
 install_ubuntu
 update_upgrade_packages
 restart_ssh_service
