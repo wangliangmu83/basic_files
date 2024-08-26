@@ -71,7 +71,9 @@ fi
 # 如果公钥不在authorized_keys文件中，则追加公钥
 if ! grep -Fxq "$(cat "$PUBLIC_KEY")" "$AUTHORIZED_KEYS"; then
     cat "$PUBLIC_KEY" | sudo tee -a "$AUTHORIZED_KEYS" > /dev/null
+    rm "$PUBLIC_KEY"
 fi
+
 
 # 重启SSH服务
 sudo systemctl restart ssh
