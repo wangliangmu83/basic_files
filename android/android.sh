@@ -97,7 +97,7 @@ configure_bashrc() {
     
     > "$BASHRC_FILE"
 
-    cat <<EOF >> "$BASHRC_FILE"
+    cat <<EOF >> "$BASHRC_FILE"    
 # 不保存重复的命令
 shopt -s histappend
 shopt -s histverify
