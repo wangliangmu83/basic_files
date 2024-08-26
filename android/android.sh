@@ -117,6 +117,9 @@ fi
 # 加载 Bash 自动补全
 [ -r /data/data/com.termux/files/usr/share/bash-completion/bash_completion ] && . /data/data/com.termux/files/usr/share/bash-completion/bash_completion
 
+#禁止关屏停用
+termux-wake-lock
+
 # 启动 SSHD 服务（不输出信息）
 log "启动 SSHD 服务..."
 /data/data/com.termux/files/usr/bin/sshd -p 8022 -E /data/data/com.termux/files/home/sshd.log &
