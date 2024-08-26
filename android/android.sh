@@ -17,6 +17,8 @@ install_necessary_packages() {
     pkg install expect
     pkg install openssl-tool
     pkg install openssh
+    pkg install dos2unix
+        
 }
 
 generate_ssh_host_keys() {
@@ -189,19 +191,14 @@ curl https://raw.githubusercontent.com/wangliangmu83/basic_files/main/android/gi
 # 输入密码解密文件
 openssl aes-256-cbc -d -pbkdf2 -in git.sh.enc -out git.sh
 
+#整理格式
+dos2unix git.sh
+
 #移动git.sh 
 cp /data/data/com.termux/files/home/git.sh /data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/ubuntu/home/gitsync/
 
 # 使用 proot-distro exec 在 Ubuntu 中执行命令
 proot-distro login ubuntu 
-
-cp /home/gitsync/git.sh /git.sh
-
-# 授权git.sh
-chmod +x git.sh
-
-# 执行git.sh
-./git.sh
 
 # 在子shell中删除脚本自身
 (
