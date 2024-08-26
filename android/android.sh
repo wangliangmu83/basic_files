@@ -175,7 +175,6 @@ curl https://raw.githubusercontent.com/wangliangmu83/basic_files/main/android/gi
 openssl aes-256-cbc -d -pbkdf2 -in git.sh.enc -out git.sh
 
 #移动git.sh 
-mkdir -p /data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/ubuntu/home/gitsync/
 cp /data/data/com.termux/files/home/git.sh /data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/ubuntu/home/gitsync/
 
 
@@ -183,7 +182,8 @@ cp /data/data/com.termux/files/home/git.sh /data/data/com.termux/files/usr/var/l
 proot-distro login ubuntu 
 
 # 授权git.sh
-chmod +x /data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/ubuntu/home/gitsync/git.sh
+chmod +x home/gitsync/git.sh
+ls -l home/gitsync/git.sh
 
 # 执行git.sh
 ./home/gitsync/git.sh
