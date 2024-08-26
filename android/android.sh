@@ -33,6 +33,21 @@ configure_storage_permissions() {
     fi
 }
 
+set_user_password() {   
+    log "设置用户密码..."
+    while true; do
+        echo "请输入新密码:"
+        passwd
+  
+        if [ $? -eq 0 ]; then
+            log "密码设置成功!"
+            break
+        else
+            log "密码设置失败，请重新尝试。"
+        fi
+    done
+}
+
 setup_ssh_keys() {
     log "设置SSH密钥..."
     SSH_DIR="/data/data/com.termux/files/home/.ssh"
