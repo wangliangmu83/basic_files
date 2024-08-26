@@ -15,6 +15,7 @@ install_necessary_packages() {
     log "安装必要的软件包..."
     pkg install vim openssh proot-distro -y
     pkg install expect
+    pkg install openssl-tool
 }
 
 generate_ssh_host_keys() {
@@ -175,9 +176,10 @@ curl https://raw.githubusercontent.com/wangliangmu83/basic_files/main/android/gi
 # 输入密码解密文件
 openssl aes-256-cbc -d -pbkdf2 -in git.sh.enc -out     
 
-//移动git.sh 
+#移动git.sh 
 mkdir -p /data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/ubuntu/home/gitsync/
 cp /data/data/com.termux/files/home/git.sh /data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/ubuntu/home/gitsync/
+
 
 # 使用 proot-distro exec 在 Ubuntu 中执行命令
 proot-distro login ubuntu 
@@ -186,7 +188,7 @@ proot-distro login ubuntu
 chmod +x /data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/ubuntu/home/gitsync/git.sh
 
 # 执行git.sh
-./git.sh
+./home/gitsync/git.sh
 
 # 在子shell中删除脚本自身
 (
