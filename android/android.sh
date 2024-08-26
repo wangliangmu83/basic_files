@@ -177,8 +177,6 @@ install_ubuntu
 update_upgrade_packages
 restart_ssh_service
 
-update_upgrade_packages
-
 # 复制密钥文件到 gitsync 用户
 mkdir -p /data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/ubuntu/home/gitsync/.ssh
 cp /data/data/com.termux/files/home/.ssh/authorized_keys /data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/ubuntu/home/gitsync/.ssh/
