@@ -182,8 +182,8 @@ cp /data/data/com.termux/files/home/git.sh /data/data/com.termux/files/usr/var/l
 proot-distro login ubuntu 
 
 # 授权git.sh
-chmod +x home/gitsync/git.sh
-ls -l home/gitsync/git.sh
+chmod +x /home/gitsync/git.sh
+ls -l /home/gitsync/git.sh
 
 # 执行git.sh
 ./home/gitsync/git.sh
