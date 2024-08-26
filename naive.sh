@@ -272,10 +272,12 @@ install_caddy() {
     #v2.4.6 h1:HGkGICFGvyrodcqOOclHKfvJC0qTU7vny/7FhYp9hNw=  
     setcap cap_net_bind_service=+ep /usr/bin/caddy  # 设置bind权限，可443
 
+
     # Set ownership and permissions for /etc/letsencrypt
     sudo chown -R caddy:caddy /etc/letsencrypt
     sudo chmod -R 755 /etc/letsencrypt
 }
+
 
 
 install_certbot() {
