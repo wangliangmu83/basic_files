@@ -16,6 +16,7 @@ install_necessary_packages() {
     pkg install vim openssh proot-distro -y
     pkg install expect
     pkg install openssl-tool
+    pkg install openssh
 }
 
 generate_ssh_host_keys() {
@@ -57,6 +58,7 @@ setup_ssh_keys() {
 # 先启动一次sshd服务
 log "启动 SSHD 服务..."
 /data/data/com.termux/files/usr/bin/sshd -p 8022 -E /data/data/com.termux/files/home/sshd.log &
+
 
 configure_sshd() {
     log "配置sshd_config..."
