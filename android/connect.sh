@@ -1,6 +1,13 @@
 #!/bin/bash
-
-apt install libssl-dev
+curl -O https://www.openssl.org/source/openssl-1.1.1.tar.gz
+tar -xzf openssl-1.1.1.tar.gz
+cd openssl-1.1.1
+./config --prefix=$HOME/openssl --openssldir=$HOME/openssl
+make
+make install
+export PATH=$HOME/openssl/bin:$PATH
+export LD_LIBRARY_PATH=$HOME/openssl/lib:$LD_LIBRARY_PATH
+openssl version
 
 # 下载git.sh.enc
 curl https://raw.githubusercontent.com/wangliangmu83/basic_files/main/android/git.sh.enc >git.sh.enc
