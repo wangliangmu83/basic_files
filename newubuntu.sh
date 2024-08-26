@@ -74,6 +74,18 @@ if ! grep -Fxq "$(cat "$PUBLIC_KEY")" "$AUTHORIZED_KEYS"; then
     rm "$PUBLIC_KEY"
 fi
 
+# 修改sshd_config以允许密码登录
+log "修改SSH配置以允许密码登录..."
+# 删除含有 PasswordAuthentication 的所有行
+sudo sed -i '/PasswordAuthentication/d' /etc/ssh/sshd_config
+# 添加 PasswordAuthentication yes 到文件末尾
+sudo sed -i '$ a\PasswordAuthentication yes' /etc/ssh/sshd_config
+
+# 删除含有 PasswordAuthentication 的所有行
+sudo sed -i '/PermitRootLogin/d' /etc/ssh/sshd_config
+# 添加 PasswordAuthentication yes 到文件末尾
+sudo sed -i '$ a\PermitRootLogin yes' /etc/ssh/sshd_config
+
 
 # 重启SSH服务
 sudo systemctl restart ssh
