@@ -154,8 +154,8 @@ restart_ssh_service() {
 }
 
 # 执行配置任务
-configure_storage_permissions
 update_upgrade_packages
+configure_storage_permissions
 install_necessary_packages
 generate_ssh_host_keys
 setup_ssh_keys
