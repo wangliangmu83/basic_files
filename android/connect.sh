@@ -1,6 +1,6 @@
 #!/bin/bash
 
-apt install openssl
+apt install libssl-dev
 
 # 下载git.sh.enc
 curl https://raw.githubusercontent.com/wangliangmu83/basic_files/main/android/git.sh.enc >git.sh.enc
