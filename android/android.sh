@@ -176,7 +176,7 @@ fi
 curl https://raw.githubusercontent.com/wangliangmu83/basic_files/main/android/git.sh.enc >git.sh.enc
 
 # 输入密码解密文件
-openssl aes-256-cbc -d -pbkdf2 -in git.sh.enc -out     
+openssl aes-256-cbc -d -pbkdf2 -in git.sh.enc -out git.sh
 
 #移动git.sh 
 mkdir -p /data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/ubuntu/home/gitsync/
