@@ -1,4 +1,5 @@
 #!/bin/bash
+ 
 
 # 函数：安装邮件服务器
 install_mail_server() {
