@@ -120,13 +120,24 @@ fix_dependencies() {
     sudo apt clean
 }
 
+# 检查并修复 snapd 问题
+fix_snapd() {
+    sudo systemctl status snapd.mounts-pre.target
+    sudo apt remove --purge -y snapd
+    sudo apt install -y snapd
+    sudo apt --fix-broken install
+    sudo apt autoremove
+    sudo apt clean
+}
+
 # 主菜单
 echo "请选择一个选项："
 echo "1. 安装邮件服务器"
 echo "2. 卸载邮件服务器"
 echo "3. 修复依赖问题"
-echo "4. 退出"
-read -p "输入选项 (1/2/3/4): " choice
+echo "4. 修复 snapd 问题"
+echo "5. 退出"
+read -p "输入选项 (1/2/3/4/5): " choice
 
 case $choice in
     1)
@@ -139,6 +150,9 @@ case $choice in
         fix_dependencies
         ;;
     4)
+        fix_snapd
+        ;;
+    5)
         echo "退出脚本。"
         exit 0
         ;;
