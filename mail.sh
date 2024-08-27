@@ -30,10 +30,20 @@ install_mail_server() {
     sudo chown -R vmail:vmail /home/mail
     sudo chmod -R 770 /home/mail
 
+    # 设置域名变量
+    mydomain="bestwood.asia"
+    myhostname="mail.bestwood.asia"
+
+    # 检查域名变量
+    if [[ -z "$mydomain" ]] || [[ -z "$myhostname" ]]; then
+        echo "域名变量未设置或为空，请检查后重新运行脚本。"
+        exit 1
+    fi
+
     # 配置Postfix
     sudo tee /etc/postfix/main.cf > /dev/null <<EOL
-myhostname = mail.bestwood.asia
-mydomain = bestwood.asia
+myhostname = $myhostname
+mydomain = $mydomain
 myorigin = /etc/mailname
 inet_interfaces = all
 mydestination = \$myhostname, localhost.\$mydomain, localhost, \$mydomain
@@ -44,7 +54,7 @@ smtpd_banner = \$myhostname ESMTP \$mail_name (Ubuntu)
 smtpd_tls_cert_file=/etc/ssl/certs/mailserver.pem
 smtpd_tls_key_file=/etc/ssl/private/mailserver.key
 smtpd_use_tls=yes
-virtual_mailbox_domains = bestwood.asia
+virtual_mailbox_domains = $mydomain
 virtual_mailbox_base = /home/mail
 virtual_mailbox_maps = hash:/etc/postfix/vmailbox
 virtual_minimum_uid = 100
@@ -79,7 +89,7 @@ service lmtp {
 EOL
 
     # 生成SSL证书
-    sudo openssl req -new -x509 -days 365 -nodes -out /etc/ssl/certs/mailserver.pem -keyout /etc/ssl/private/mailserver.key -subj "/C=US/ST=State/L=City/O=Organization/OU=Department/CN=mail.bestwood.asia"
+    sudo openssl req -new -x509 -days 365 -nodes -out /etc/ssl/certs/mailserver.pem -keyout /etc/ssl/private/mailserver.key -subj "/C=US/ST=State/L=City/O=Organization/OU=Department/CN=$myhostname"
 
     # 重启服务
     sudo systemctl restart postfix
@@ -148,9 +158,3 @@ case $choice in
         echo "无效选项，请重新输入。"
         ;;
 esac
-
-# 在子shell中删除脚本自身
-(
-    sleep 5 # 等待一段时间让脚本完全执行完毕
-    rm "$0"
-) &
