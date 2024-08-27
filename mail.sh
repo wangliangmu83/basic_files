@@ -93,29 +93,28 @@ uninstall_mail_server() {
     sudo apt clean
 
     echo "邮件服务器已卸载！"
+    exit 0
 }
 
 # 主菜单
-while true; do
-    echo "请选择一个选项："
-    echo "1. 安装邮件服务器"
-    echo "2. 卸载邮件服务器"
-    echo "3. 退出"
-    read -p "输入选项 (1/2/3): " choice
+echo "请选择一个选项："
+echo "1. 安装邮件服务器"
+echo "2. 卸载邮件服务器"
+echo "3. 退出"
+read -p "输入选项 (1/2/3): " choice
 
-    case $choice in
-        1)
-            install_mail_server
-            ;;
-        2)
-            uninstall_mail_server
-            ;;
-        3)
-            echo "退出脚本。"
-            exit 0
-            ;;
-        *)
-            echo "无效选项，请重新输入。"
-            ;;
-    esac
-done
+case $choice in
+    1)
+        install_mail_server
+        ;;
+    2)
+        uninstall_mail_server
+        ;;
+    3)
+        echo "退出脚本。"
+        exit 0
+        ;;
+    *)
+        echo "无效选项，请重新输入。"
+        ;;
+esac
