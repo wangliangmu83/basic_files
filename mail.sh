@@ -13,7 +13,7 @@ install_mail_server() {
     sudo apt clean
 
     # 检查并修复 snapd 问题
-    sudo systemctl status snapd.mounts-pre.target
+    sudo systemctl status snapd.mounts-pre.target || true
     sudo apt remove --purge -y snapd
     sudo apt install -y snapd
     sudo apt --fix-broken install
