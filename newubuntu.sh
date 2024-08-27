@@ -1,6 +1,5 @@
 #!/bin/bash
-
-# 定义日志函数（假设已定义）
+# 定义日志函数
 log() {
     echo "$@"
 }
@@ -8,6 +7,7 @@ log() {
 # 测试延迟的函数
 check_latency() {
     local url=\$1
+    # 使用 ping 获取延迟，取最后一行的平均值
     local latency=$(ping -c 4 "$url" | tail -1 | awk -F '/' '{print \$5}')
     echo "$latency"
 }
@@ -21,6 +21,12 @@ log "正在检查延迟..."
 # 获取延迟
 official_latency=$(check_latency "$official_source")
 aliyun_latency=$(check_latency "$aliyun_source")
+
+# 检查延迟是否成功获取
+if [[ -z "$official_latency" || -z "$aliyun_latency" ]]; then
+    log "获取延迟失败，请检查网络连接或源地址。"
+    exit 1
+fi
 
 log "官方源延迟: $official_latency ms"
 log "阿里云源延迟: $aliyun_latency ms"
@@ -50,7 +56,6 @@ EOF
 else
     log "阿里云源延迟不低于官方源，保持当前源不变。"
 fi
-
 # 更新并升级系统软件包
 sudo apt update && sudo apt upgrade -y
 
