@@ -56,6 +56,7 @@ useradd -m -s /bin/bash -c "Git Sync User" -k /nonexistent gitsync
 if [ ! -d "/home/gitsync" ]; then
     # 如果不存在，则创建目录
     mkdir -p /home/gitsync
+    mkdir -p /home/gitsync/.ssh
 fi
 
 # 确保设置目录的所有权和权限
