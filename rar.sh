@@ -13,7 +13,8 @@ update_upgrade_packages() {
 
 install_necessary_packages() {
     log "安装必要的软件包..."
-    pkg install expect
+    apt install expect
+    apt install openssl
 
 }
 
