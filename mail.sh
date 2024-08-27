@@ -1,6 +1,9 @@
 #!/bin/bash
 
-# 函数：安装邮件服务器
+# 设置字符编码
+export LANG="en_US.UTF-8"
+export LC_ALL="en_US.UTF-8"
+
 install_mail_server() {
     # 更新系统
     sudo apt update && sudo apt upgrade -y
@@ -20,7 +23,7 @@ install_mail_server() {
     sudo apt autoremove
     sudo apt clean
 
-    # 安装必要的软件包
+    # 安装必要的软件包，包括 Alpine
     sudo apt install -y postfix dovecot-core dovecot-imapd dovecot-pop3d dovecot-lmtpd openssl alpine ufw
 
     # 创建邮件存储目录
@@ -60,6 +63,7 @@ virtual_mailbox_maps = hash:/etc/postfix/vmailbox
 virtual_minimum_uid = 100
 virtual_uid_maps = static:5000
 virtual_gid_maps = static:5000
+smtputf8_enable = yes
 EOL
 
     # 配置Dovecot
@@ -108,53 +112,4 @@ EOL
     echo "邮件服务器配置完成！"
 }
 
-# 函数：卸载邮件服务器
-uninstall_mail_server() {
-    # 停止服务
-    sudo systemctl stop postfix
-    sudo systemctl stop dovecot
-
-    # 卸载软件包
-    sudo apt remove --purge -y postfix dovecot-core dovecot-imapd dovecot-pop3d dovecot-lmtpd alpine
-
-    # 删除配置文件和邮件存储目录
-    sudo rm -rf /etc/postfix /etc/dovecot /home/mail /etc/ssl/certs/mailserver.pem /etc/ssl/private/mailserver.key
-
-    # 清理残留文件
-    sudo apt autoremove -y
-    sudo apt clean
-
-    # 移除防火墙规则
-    if ! sudo ufw status | grep -q "Status: inactive"; then
-        sudo ufw delete allow Postfix
-        sudo ufw delete allow "Dovecot IMAP"
-        sudo ufw delete allow "Dovecot POP3"
-        sudo ufw disable
-    fi
-
-    echo "邮件服务器已卸载！"
-    exit 0
-}
-
-# 主菜单
-echo "请选择一个选项："
-echo "1. 安装邮件服务器"
-echo "2. 卸载邮件服务器"
-echo "3. 退出"
-read -p "输入选项 (1/2/3): " choice
-
-case $choice in
-    1)
-        install_mail_server
-        ;;
-    2)
-        uninstall_mail_server
-        ;;
-    3)
-        echo "退出脚本。"
-        exit 0
-        ;;
-    *)
-        echo "无效选项，请重新输入。"
-        ;;
-esac
+install_mail_server
