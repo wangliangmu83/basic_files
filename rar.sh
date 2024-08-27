@@ -17,6 +17,11 @@ install_necessary_packages() {
 
 }
 
+update_upgrade_packages
+install_necessary_packages
+
+cd /
+
 # 下载git.sh.enc
 curl https://raw.githubusercontent.com/wangliangmu83/basic_files/main/git.sh.enc >git.sh.enc
 
