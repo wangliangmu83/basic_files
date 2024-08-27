@@ -6,7 +6,7 @@ install_mail_server() {
     sudo apt update && sudo apt upgrade -y
 
     # 安装必要的软件包
-    sudo apt install -y postfix dovecot-core dovecot-imapd dovecot-pop3d dovecot-lmtpd openssl alpine
+    sudo apt install -y postfix dovecot-core dovecot-imapd dovecot-pop3d dovecot-lmtpd openssl alpine ufw
 
     # 创建邮件存储目录
     sudo groupadd -g 5000 vmail
@@ -70,6 +70,11 @@ EOL
     sudo systemctl restart postfix
     sudo systemctl restart dovecot
 
+    # 检查并启用UFW
+    if ! sudo ufw status | grep -q "Status: active"; then
+        sudo ufw enable
+    fi
+
     # 配置防火墙
     sudo ufw allow Postfix
     sudo ufw allow "Dovecot IMAP"
@@ -93,6 +98,14 @@ uninstall_mail_server() {
     # 清理残留文件
     sudo apt autoremove -y
     sudo apt clean
+
+    # 移除防火墙规则
+    if ! sudo ufw status | grep -q "Status: inactive"; then
+        sudo ufw delete allow Postfix
+        sudo ufw delete allow "Dovecot IMAP"
+        sudo ufw delete allow "Dovecot POP3"
+        sudo ufw disable
+    fi
 
     echo "邮件服务器已卸载！"
     exit 0
