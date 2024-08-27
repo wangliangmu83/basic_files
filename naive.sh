@@ -285,7 +285,6 @@ install_caddy() {
     wget https://raw.githubusercontent.com/wangliangmu83/basic_files/main/caddy_forwardproxy_naive.tar.xz
 
     tar xvf caddy-forwardproxy-naive.tar.xz 
-    rm -f caddy-forwardproxy-naive.tar.xz  # 删除原来的压缩文件
     systemctl stop naive
     \cp caddy-forwardproxy-naive/caddy /usr/bin/
     /usr/bin/caddy version        # 2022-4-8 23:09
