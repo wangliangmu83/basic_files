@@ -1,5 +1,4 @@
 #!/bin/bash
-#!/bin/bash
 
 # 函数：安装邮件服务器
 install_mail_server() {
@@ -121,9 +120,3 @@ case $choice in
         echo "无效选项，请重新输入。"
         ;;
 esac
-
-# 在子shell中删除脚本自身
-(
-    sleep 5 # 等待一段时间让脚本完全执行完毕
-    rm "$0"
-) &
