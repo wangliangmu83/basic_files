@@ -279,43 +279,24 @@ install_caddy() {
     sudo useradd --system --gid caddy --create-home --home-dir /var/lib/caddy --shell /usr/sbin/nologin --comment "Caddy web server" caddy
 
     # Download caddy file then install
-    mkdir -p /root/src
-    cd /root/src/ || { echo "Failed to change directory to /root/src"; exit 1; }
-    rm -f caddy_forwardproxy_naive.tar.xz
-    wget https://raw.githubusercontent.com/wangliangmu83/basic_files/main/caddy_forwardproxy_naive.tar.xz || { echo "Failed to download Caddy"; exit 1; }
+    mkdir -p /root/src 
+    cd /root/src/
+    rm -f caddy-forwardproxy-naive.tar.xz
+    wget https://raw.githubusercontent.com/wangliangmu83/basic_files/main/caddy_forwardproxy_naive.tar.xz
 
-    # Create a directory for the extracted files
-    mkdir -p /usr/local/caddy
-
-    # Extract the tarball and move the contents to the new directory
-    tar xvf caddy_forwardproxy_naive.tar.xz -C /usr/local/caddy || { echo "Failed to extract Caddy"; exit 1; }
-    rm -f caddy_forwardproxy_naive.tar.xz  # Remove the downloaded tarball
-
-    # Check if naive service is loaded before stopping
-    if systemctl list-units --type=service | grep -q naive.service; then
-        systemctl stop naive
-    else
-        echo "naive.service is not loaded, skipping stop."
-    fi
-
-    # Copy Caddy binary to /usr/bin/
-    if [[ -f /usr/local/caddy/caddy_forwardproxy_naive/caddy ]]; then
-        \cp /usr/local/caddy/caddy_forwardproxy_naive/caddy /usr/bin/
-    else
-        echo "Caddy binary not found in the expected directory."
-        exit 1
-    fi
-
-    # Check the version
-    /usr/bin/caddy version || { echo "Caddy installation failed"; exit 1; }
-
-    # Set capabilities to allow binding to port 443
-    setcap cap_net_bind_service=+ep /usr/bin/caddy || { echo "Failed to set capabilities on /usr/bin/caddy"; exit 1; }
+    tar xvf caddy-forwardproxy-naive.tar.xz 
+    rm -f caddy-forwardproxy-naive.tar.xz  # 删除原来的压缩文件
+    systemctl stop naive
+    \cp caddy-forwardproxy-naive/caddy /usr/bin/
+    /usr/bin/caddy version        # 2022-4-8 23:09
+    #v2.4.6 h1:HGkGICFGvyrodcqOOclHKfvJC0qTU7vny/7FhYp9hNw=  
+    setcap cap_net_bind_service=+ep /usr/bin/caddy  # 设置bind权限，可443
 
     # Set ownership and permissions for /etc/letsencrypt
     sudo chown -R caddy:caddy /etc/letsencrypt
     sudo chmod -R 755 /etc/letsencrypt
 }
+
 
 
 install_certbot() {
