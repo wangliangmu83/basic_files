@@ -64,7 +64,7 @@ if [[ $(command -v apt-get) || $(command -v yum) ]] && [[ $(command -v systemctl
 else
 
     echo -e " 
-    哈哈……这个 ${red}辣鸡脚本${none} 不支持你的系统。 ${yellow}(-_-) ${none}
+            哈哈……这个 ${red}辣鸡脚本${none} 不支持你的系统。 ${yellow}(-_-) ${none}
 
     备注: 仅支持 Ubuntu 16+ / Debian 8+ / CentOS 7+ 系统
     " && exit 1
@@ -236,21 +236,41 @@ domain_check() {
 }
 
 install_go() {
-    cd /opt
-    rm /opt/go1.21.7.linux-${caddy_arch}.tar.gz -rf
-    wget https://go.dev/dl/go1.21.7.linux-${caddy_arch}.tar.gz
-    tar -zxf go1.21.7.linux-${caddy_arch}.tar.gz -C /usr/local/
-    echo export GOROOT=/usr/local/go >> /etc/profile
-    echo export PATH=$GOROOT/bin:$PATH >> /etc/profile
+    # Change to the /opt directory
+    cd /opt || { echo "Failed to change directory to /opt"; exit 1; }
+
+    # Remove the existing Go tarball if it exists
+    rm -rf /opt/go1.21.7.linux-${caddy_arch}.tar.gz
+
+    # Download the Go tarball
+    wget https://go.dev/dl/go1.21.7.linux-${caddy_arch}.tar.gz || { echo "Failed to download Go"; exit 1; }
+
+    # Extract the tarball to /usr/local/
+    tar -zxf go1.21.7.linux-${caddy_arch}.tar.gz -C /usr/local/ || { echo "Failed to extract Go"; exit 1; }
+
+    # Remove the downloaded tarball after extraction
+    rm -f /opt/go1.21.7.linux-${caddy_arch}.tar.gz
+
+    # Set GOROOT and update PATH
+    echo "export GOROOT=/usr/local/go" >> /etc/profile
+    echo "export PATH=\$GOROOT/bin:\$PATH" >> /etc/profile
+
+    # Source the updated profile
     source /etc/profile
+
+    # Set GOROOT and PATH for the current session
     export GOROOT=/usr/local/go
     export PATH=$GOROOT/bin:$PATH
+
+    # Check the Go version
     go version
-    if [[ $? != '0' ]]; then
+    if [[ $? != 0 ]]; then
         echo
-        echo "Golang安装失败，请确认机器内存>512M以及空余空间>5G"
+        echo "Golang installation failed. Please ensure the machine has more than 512MB of memory and over 5GB of free space."
         exit 1
     fi
+
+    echo "Golang installed successfully."
 }
 
 
@@ -260,23 +280,36 @@ install_caddy() {
     sudo useradd --system --gid caddy --create-home --home-dir /var/lib/caddy --shell /usr/sbin/nologin --comment "Caddy web server" caddy
 
     # Download caddy file then install
-    mkdir -p /root/src 
-    cd /root/src/
+    mkdir -p /root/src
+    cd /root/src/ || { echo "Failed to change directory to /root/src"; exit 1; }
     rm -f caddy_forwardproxy_naive.tar.xz
-    wget https://raw.githubusercontent.com/wangliangmu83/basic_files/main/caddy_forwardproxy_naive.tar.xz
+    wget https://raw.githubusercontent.com/wangliangmu83/basic_files/main/caddy_forwardproxy_naive.tar.xz || { echo "Failed to download Caddy"; exit 1; }
 
-    tar xvf caddy_forwardproxy_naive.tar.xz 
+    # Create a directory for the extracted files
+    mkdir -p /usr/local/caddy
+
+    # Extract the tarball and move the contents to the new directory
+    tar xvf caddy_forwardproxy_naive.tar.xz -C /usr/local/caddy || { echo "Failed to extract Caddy"; exit 1; }
+    rm -f caddy_forwardproxy_naive.tar.xz  # Remove the downloaded tarball
+
+    # Stop the naive service
     systemctl stop naive
-    \cp caddy_forwardproxy_naive/caddy /usr/bin/
-    /usr/bin/caddy version        # 2022-4-8 23:09
-    #v2.4.6 h1:HGkGICFGvyrodcqOOclHKfvJC0qTU7vny/7FhYp9hNw=  
-    setcap cap_net_bind_service=+ep /usr/bin/caddy  # 设置bind权限，可443
 
+    # Copy Caddy binary to /usr/bin/
+    \cp /usr/local/caddy/caddy_forwardproxy_naive/caddy /usr/bin/
+
+    # Check the version
+    /usr/bin/caddy version  # 2022-4-8 23:09
+    # v2.4.6 h1:HGkGICFGvyrodcqOOclHKfvJC0qTU7vny/7FhYp9hNw=
+
+    # Set capabilities to allow binding to port 443
+    setcap cap_net_bind_service=+ep /usr/bin/caddy
 
     # Set ownership and permissions for /etc/letsencrypt
     sudo chown -R caddy:caddy /etc/letsencrypt
     sudo chmod -R 755 /etc/letsencrypt
 }
+
 
 
 
@@ -423,8 +456,12 @@ EOF
 config() {
     mkdir -p /etc/ssl/caddy /etc/caddy /var/www
 
-    wget -c https://raw.githubusercontent.com/wangliangmu83/basic_files/main/html.tar.gz -O - | tar -xz -C /var/www/
-            
+   # 下载文件到临时位置
+   wget -c https://raw.githubusercontent.com/wangliangmu83/basic_files/main/html.tar.gz -O /tmp/html.tar.gz
+   
+   # 解压缩并删除原文件
+   tar -xz -C /var/www/ -f /tmp/html.tar.gz && rm -f /tmp/html.tar.gz
+
     # 生成密码
     # /etc/letsencrypt/live/x.dongvps.com/
 
@@ -583,7 +620,7 @@ get_ip() {
 
     ip_all="$ipv4 $ipv6"
 }
-
+F
 error() {
 
     echo -e "\n$red 输入错误！$none\n"
