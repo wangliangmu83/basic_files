@@ -1,6 +1,9 @@
 #!/bin/bash
+
 # 定义日志函数
-#!/bin/bash
+log() {
+    echo "$@"
+}
 
 check_latency() {
     local source="\$1"
@@ -38,6 +41,7 @@ if [ -n "$official_latency" ] && [ -n "$aliyun_latency" ]; then
 else
     echo "获取延迟失败，请检查网络连接或源地址。"
 fi
+
 
 # 更新并升级系统软件包
 sudo apt update && sudo apt upgrade -y
