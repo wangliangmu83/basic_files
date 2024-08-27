@@ -5,13 +5,35 @@ log() {
     echo "$@"
 }
 
-log "切换APT源为阿里云镜像..."
-# 备份原有的sources.list文件
-sudo cp /etc/apt/sources.list /etc/apt/sources.list.bak
-sudo rm /etc/apt/sources.list
+# 测试延迟的函数
+check_latency() {
+    local url=\$1
+    local latency=$(ping -c 4 "$url" | tail -1 | awk -F '/' '{print \$5}')
+    echo "$latency"
+}
 
-# 写入阿里云镜像源到sources.list文件
-sudo tee /etc/apt/sources.list <<EOF
+# 官方源和阿里云源
+official_source="archive.ubuntu.com"
+aliyun_source="mirrors.aliyun.com"
+
+log "正在检查延迟..."
+
+# 获取延迟
+official_latency=$(check_latency "$official_source")
+aliyun_latency=$(check_latency "$aliyun_source")
+
+log "官方源延迟: $official_latency ms"
+log "阿里云源延迟: $aliyun_latency ms"
+
+# 比较延迟并决定是否切换源
+if (( $(echo "$aliyun_latency < $official_latency" | bc -l) )); then
+    log "切换APT源为阿里云镜像..."
+    # 备份原有的sources.list文件
+    sudo cp /etc/apt/sources.list /etc/apt/sources.list.bak
+    sudo rm /etc/apt/sources.list
+
+    # 写入阿里云镜像源到sources.list文件
+    sudo tee /etc/apt/sources.list <<EOF
 deb http://mirrors.aliyun.com/ubuntu/ jammy main restricted
 deb http://mirrors.aliyun.com/ubuntu/ jammy-updates main restricted
 deb http://mirrors.aliyun.com/ubuntu/ jammy universe
@@ -23,6 +45,11 @@ deb http://mirrors.aliyun.com/ubuntu/ jammy-security universe
 deb http://mirrors.aliyun.com/ubuntu/ jammy-security multiverse
 deb http://mirrors.aliyun.com/ubuntu/ jammy-backports main restricted universe multiverse
 EOF
+
+    log "成功切换到阿里云镜像源。"
+else
+    log "阿里云源延迟不低于官方源，保持当前源不变。"
+fi
 
 # 更新并升级系统软件包
 sudo apt update && sudo apt upgrade -y
