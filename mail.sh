@@ -1,10 +1,16 @@
 #!/bin/bash
- 
 
 # 函数：安装邮件服务器
 install_mail_server() {
     # 更新系统
     sudo apt update && sudo apt upgrade -y
+
+    # 修复依赖问题
+    sudo apt install -y postfix
+    sudo apt install --reinstall lsb-core
+    sudo apt --fix-broken install
+    sudo apt autoremove
+    sudo apt clean
 
     # 安装必要的软件包
     sudo apt install -y postfix dovecot-core dovecot-imapd dovecot-pop3d dovecot-lmtpd openssl alpine ufw
@@ -112,15 +118,6 @@ uninstall_mail_server() {
     exit 0
 }
 
-# 修复依赖问题
-fix_dependencies() {
-    sudo apt install -y postfix
-    sudo apt install --reinstall lsb-core
-    sudo apt --fix-broken install
-    sudo apt autoremove
-    sudo apt clean
-}
-
 # 检查并修复 snapd 问题
 fix_snapd() {
     sudo systemctl status snapd.mounts-pre.target
@@ -135,10 +132,9 @@ fix_snapd() {
 echo "请选择一个选项："
 echo "1. 安装邮件服务器"
 echo "2. 卸载邮件服务器"
-echo "3. 修复依赖问题"
-echo "4. 修复 snapd 问题"
-echo "5. 退出"
-read -p "输入选项 (1/2/3/4/5): " choice
+echo "3. 修复 snapd 问题"
+echo "4. 退出"
+read -p "输入选项 (1/2/3/4): " choice
 
 case $choice in
     1)
@@ -148,12 +144,9 @@ case $choice in
         uninstall_mail_server
         ;;
     3)
-        fix_dependencies
-        ;;
-    4)
         fix_snapd
         ;;
-    5)
+    4)
         echo "退出脚本。"
         exit 0
         ;;
