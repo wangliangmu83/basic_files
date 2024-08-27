@@ -64,7 +64,7 @@ if [[ $(command -v apt-get) || $(command -v yum) ]] && [[ $(command -v systemctl
 else
 
     echo -e " 
-            哈哈……这个 ${red}辣鸡脚本${none} 不支持你的系统。 ${yellow}(-_-) ${none}
+    哈哈……这个 ${red}辣鸡脚本${none} 不支持你的系统。 ${yellow}(-_-) ${none}
 
     备注: 仅支持 Ubuntu 16+ / Debian 8+ / CentOS 7+ 系统
     " && exit 1
@@ -236,42 +236,23 @@ domain_check() {
 }
 
 install_go() {
-    # Change to the /opt directory
-    cd /opt || { echo "Failed to change directory to /opt"; exit 1; }
-
-    # Remove the existing Go tarball if it exists
-    rm -rf /opt/go1.21.7.linux-${caddy_arch}.tar.gz
-
-    # Download the Go tarball
-    wget https://go.dev/dl/go1.21.7.linux-${caddy_arch}.tar.gz || { echo "Failed to download Go"; exit 1; }
-
-    # Extract the tarball to /usr/local/
-    tar -zxf go1.21.7.linux-${caddy_arch}.tar.gz -C /usr/local/ || { echo "Failed to extract Go"; exit 1; }
-
-    # Remove the downloaded tarball after extraction
-    rm -f /opt/go1.21.7.linux-${caddy_arch}.tar.gz
-
-    # Set GOROOT and update PATH
-    echo "export GOROOT=/usr/local/go" >> /etc/profile
-    echo "export PATH=\$GOROOT/bin:\$PATH" >> /etc/profile
-
-    # Source the updated profile
+    cd /opt
+    rm /opt/go1.21.7.linux-${caddy_arch}.tar.gz -rf
+    wget https://go.dev/dl/go1.21.7.linux-${caddy_arch}.tar.gz
+    tar -zxf go1.21.7.linux-${caddy_arch}.tar.gz -C /usr/local/
+    echo export GOROOT=/usr/local/go >> /etc/profile
+    echo export PATH=$GOROOT/bin:$PATH >> /etc/profile
     source /etc/profile
-
-    # Set GOROOT and PATH for the current session
     export GOROOT=/usr/local/go
     export PATH=$GOROOT/bin:$PATH
-
-    # Check the Go version
     go version
-    if [[ $? != 0 ]]; then
+    if [[ $? != '0' ]]; then
         echo
-        echo "Golang installation failed. Please ensure the machine has more than 512MB of memory and over 5GB of free space."
+        echo "Golang安装失败，请确认机器内存>512M以及空余空间>5G"
         exit 1
     fi
-
-    echo "Golang installed successfully."
 }
+
 
 install_caddy() {
     # Create caddy user and group
@@ -296,7 +277,6 @@ install_caddy() {
     sudo chown -R caddy:caddy /etc/letsencrypt
     sudo chmod -R 755 /etc/letsencrypt
 }
-
 
 
 install_certbot() {
@@ -442,12 +422,8 @@ EOF
 config() {
     mkdir -p /etc/ssl/caddy /etc/caddy /var/www
 
-   # 下载文件到临时位置
-   wget -c https://raw.githubusercontent.com/wangliangmu83/basic_files/main/html.tar.gz -O /tmp/html.tar.gz
-   
-   # 解压缩并删除原文件
-   tar -xz -C /var/www/ -f /tmp/html.tar.gz && rm -f /tmp/html.tar.gz
-
+    wget -c https://raw.githubusercontent.com/wangliangmu83/basic_files/main/html.tar.gz -O - | tar -xz -C /var/www/
+            
     # 生成密码
     # /etc/letsencrypt/live/x.dongvps.com/
 
@@ -606,7 +582,7 @@ get_ip() {
 
     ip_all="$ipv4 $ipv6"
 }
-F
+
 error() {
 
     echo -e "\n$red 输入错误！$none\n"
@@ -925,7 +901,5 @@ while :; do
     *)
         error
     esac
-
-    
 done
 # 脚本结束
