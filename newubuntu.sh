@@ -6,7 +6,7 @@ log() {
 }
 
 check_latency() {
-    local source="\$1"
+    local source="$1"
     local ping_result
     ping_result=$(ping -c 4 "$source" 2>/dev/null)
 
