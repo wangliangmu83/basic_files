@@ -5,6 +5,10 @@ install_mail_server() {
     # 更新系统
     sudo apt update && sudo apt upgrade -y
 
+    # 尝试移除 lsb-invalid-mta 并解决依赖问题
+    sudo apt remove --purge lsb-invalid-mta
+    sudo apt --fix-broken install
+
     # 安装必要的软件包
     sudo apt install -y postfix dovecot-core dovecot-imapd dovecot-pop3d dovecot-lmtpd openssl
 
@@ -120,7 +124,6 @@ case $choice in
         echo "无效选项，请重新输入。"
         ;;
 esac
-
 
 # 在子shell中删除脚本自身
 (
