@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/bash
+#!bin/bash
 
 # 定义log函数
 log() {
