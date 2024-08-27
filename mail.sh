@@ -1,4 +1,5 @@
 #!/bin/bash
+#!/bin/bash
 
 # 函数：安装邮件服务器
 install_mail_server() {
@@ -9,6 +10,8 @@ install_mail_server() {
     sudo apt install -y postfix dovecot-core dovecot-imapd dovecot-pop3d dovecot-lmtpd openssl
 
     # 创建邮件存储目录
+    sudo groupadd -g 5000 vmail
+    sudo useradd -u 5000 -g vmail -s /usr/sbin/nologin -d /home/vmail -m vmail
     sudo mkdir -p /home/mail
     sudo chown -R vmail:vmail /home/mail
     sudo chmod -R 770 /home/mail
