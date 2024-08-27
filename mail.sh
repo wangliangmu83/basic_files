@@ -17,8 +17,8 @@ install_mail_server() {
 
     # 配置Postfix
     sudo tee /etc/postfix/main.cf > /dev/null <<EOL
-myhostname = mail.yourdomain.com
-mydomain = yourdomain.com
+myhostname = mail.bestwood.asia
+mydomain = bestwood.asia
 myorigin = /etc/mailname
 inet_interfaces = all
 mydestination = \$myhostname, localhost.\$mydomain, localhost, \$mydomain
@@ -29,7 +29,7 @@ smtpd_banner = \$myhostname ESMTP \$mail_name (Ubuntu)
 smtpd_tls_cert_file=/etc/ssl/certs/mailserver.pem
 smtpd_tls_key_file=/etc/ssl/private/mailserver.key
 smtpd_use_tls=yes
-virtual_mailbox_domains = yourdomain.com
+virtual_mailbox_domains = bestwood.asia
 virtual_mailbox_base = /home/mail
 virtual_mailbox_maps = hash:/etc/postfix/vmailbox
 virtual_minimum_uid = 100
@@ -64,7 +64,7 @@ service lmtp {
 EOL
 
     # 生成SSL证书
-    sudo openssl req -new -x509 -days 365 -nodes -out /etc/ssl/certs/mailserver.pem -keyout /etc/ssl/private/mailserver.key -subj "/C=US/ST=State/L=City/O=Organization/OU=Department/CN=mail.yourdomain.com"
+    sudo openssl req -new -x509 -days 365 -nodes -out /etc/ssl/certs/mailserver.pem -keyout /etc/ssl/private/mailserver.key -subj "/C=US/ST=State/L=City/O=Organization/OU=Department/CN=mail.bestwood.asia"
 
     # 重启服务
     sudo systemctl restart postfix
@@ -120,8 +120,3 @@ case $choice in
         echo "无效选项，请重新输入。"
         ;;
 esac
-# 在子shell中删除脚本自身
-(
-    sleep 5 # 等待一段时间让脚本完全执行完毕
-    rm "$0"
-) &
