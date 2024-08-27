@@ -111,12 +111,22 @@ uninstall_mail_server() {
     exit 0
 }
 
+# 修复依赖问题
+fix_dependencies() {
+    sudo apt install -y postfix
+    sudo apt install --reinstall lsb-core
+    sudo apt --fix-broken install
+    sudo apt autoremove
+    sudo apt clean
+}
+
 # 主菜单
 echo "请选择一个选项："
 echo "1. 安装邮件服务器"
 echo "2. 卸载邮件服务器"
-echo "3. 退出"
-read -p "输入选项 (1/2/3): " choice
+echo "3. 修复依赖问题"
+echo "4. 退出"
+read -p "输入选项 (1/2/3/4): " choice
 
 case $choice in
     1)
@@ -126,6 +136,9 @@ case $choice in
         uninstall_mail_server
         ;;
     3)
+        fix_dependencies
+        ;;
+    4)
         echo "退出脚本。"
         exit 0
         ;;
