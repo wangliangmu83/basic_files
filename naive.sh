@@ -262,13 +262,13 @@ install_caddy() {
     # Download caddy file then install
     mkdir -p /root/src 
     cd /root/src/
-    rm -f caddy_forwardproxy_naive.tar.xz
-    wget https://raw.githubusercontent.com/wangliangmu83/basic_files/main/caddy_forwardproxy_naive.tar.xz
+    rm -f caddy-forwardproxy-naive.tar.xz
+    wget https://raw.githubusercontent.com/wangliangmu83/basic_files/main/caddy-forwardproxy-naive.tar.xz
 
-    tar xvf caddy_forwardproxy_naive.tar.xz 
-    rm -f caddy_forwardproxy_naive.tar.xz
+    tar xvf caddy-forwardproxy-naive.tar.xz 
+    rm -f caddy-forwardproxy-naive.tar.xz
     systemctl stop naive
-    \cp caddy_forwardproxy_naive/caddy /usr/bin/
+    mv caddy-forwardproxy-naive/caddy /usr/bin/
     /usr/bin/caddy version        # 2022-4-8 23:09
     #v2.4.6 h1:HGkGICFGvyrodcqOOclHKfvJC0qTU7vny/7FhYp9hNw=  
     setcap cap_net_bind_service=+ep /usr/bin/caddy  # 设置bind权限，可443
