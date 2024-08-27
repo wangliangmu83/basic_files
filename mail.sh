@@ -20,6 +20,13 @@ install_mail_server() {
     sudo apt autoremove -y
     sudo apt clean
 
+    # 确保 mail-transport-agent 已安装
+    echo "检查 mail-transport-agent..."
+    if ! dpkg -l | grep -q mail-transport-agent; then
+        echo "正在安装 mail-transport-agent..."
+        sudo apt install -y mail-transport-agent
+    fi
+
     # 检查并修复 snapd 问题
     echo "检查 snapd..."
     if ! systemctl is-active --quiet snapd; then
