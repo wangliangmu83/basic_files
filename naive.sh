@@ -273,7 +273,6 @@ install_go() {
     echo "Golang installed successfully."
 }
 
-
 install_caddy() {
     # Create caddy user and group
     sudo groupadd --system caddy
@@ -292,25 +291,31 @@ install_caddy() {
     tar xvf caddy_forwardproxy_naive.tar.xz -C /usr/local/caddy || { echo "Failed to extract Caddy"; exit 1; }
     rm -f caddy_forwardproxy_naive.tar.xz  # Remove the downloaded tarball
 
-    # Stop the naive service
-    systemctl stop naive
+    # Check if naive service is loaded before stopping
+    if systemctl list-units --type=service | grep -q naive.service; then
+        systemctl stop naive
+    else
+        echo "naive.service is not loaded, skipping stop."
+    fi
 
     # Copy Caddy binary to /usr/bin/
-    \cp /usr/local/caddy/caddy_forwardproxy_naive/caddy /usr/bin/
+    if [[ -f /usr/local/caddy/caddy_forwardproxy_naive/caddy ]]; then
+        \cp /usr/local/caddy/caddy_forwardproxy_naive/caddy /usr/bin/
+    else
+        echo "Caddy binary not found in the expected directory."
+        exit 1
+    fi
 
     # Check the version
-    /usr/bin/caddy version  # 2022-4-8 23:09
-    # v2.4.6 h1:HGkGICFGvyrodcqOOclHKfvJC0qTU7vny/7FhYp9hNw=
+    /usr/bin/caddy version || { echo "Caddy installation failed"; exit 1; }
 
     # Set capabilities to allow binding to port 443
-    setcap cap_net_bind_service=+ep /usr/bin/caddy
+    setcap cap_net_bind_service=+ep /usr/bin/caddy || { echo "Failed to set capabilities on /usr/bin/caddy"; exit 1; }
 
     # Set ownership and permissions for /etc/letsencrypt
     sudo chown -R caddy:caddy /etc/letsencrypt
     sudo chmod -R 755 /etc/letsencrypt
 }
-
-
 
 
 install_certbot() {
