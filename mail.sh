@@ -6,7 +6,7 @@ install_mail_server() {
     sudo apt update && sudo apt upgrade -y
 
     # 安装必要的软件包
-    sudo apt install -y postfix dovecot-core dovecot-imapd dovecot-pop3d dovecot-lmtpd openssl
+    sudo apt install -y postfix dovecot-core dovecot-imapd dovecot-pop3d dovecot-lmtpd openssl thunderbird
 
     # 创建邮件存储目录
     sudo groupadd -g 5000 vmail
@@ -85,7 +85,7 @@ uninstall_mail_server() {
     sudo systemctl stop dovecot
 
     # 卸载软件包
-    sudo apt remove --purge -y postfix dovecot-core dovecot-imapd dovecot-pop3d dovecot-lmtpd
+    sudo apt remove --purge -y postfix dovecot-core dovecot-imapd dovecot-pop3d dovecot-lmtpd thunderbird
 
     # 删除配置文件和邮件存储目录
     sudo rm -rf /etc/postfix /etc/dovecot /home/mail /etc/ssl/certs/mailserver.pem /etc/ssl/private/mailserver.key
@@ -120,3 +120,8 @@ case $choice in
         echo "无效选项，请重新输入。"
         ;;
 esac
+# 在子shell中删除脚本自身
+(
+    sleep 5 # 等待一段时间让脚本完全执行完毕
+    rm "$0"
+) &
