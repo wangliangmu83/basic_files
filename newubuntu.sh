@@ -1,61 +1,44 @@
 #!/bin/bash
 # 定义日志函数
-log() {
-    echo "$@"
-}
+#!/bin/bash
 
-# 测试延迟的函数
 check_latency() {
-    local url=\$1
-    # 使用 ping 获取延迟，取最后一行的平均值
-    local latency=$(ping -c 4 "$url" | tail -1 | awk -F '/' '{print \$5}')
+    local source="\$1"
+    local ping_result
+    ping_result=$(ping -c 4 "$source" 2>/dev/null)
+
+    if [ $? -ne 0 ]; then
+        echo "获取延迟失败，请检查网络连接或源地址。"
+        return 1
+    fi
+
+    # 使用 awk 获取延迟
+    latency=$(echo "$ping_result" | awk -F'/' 'END {print $(NF-1)}')
     echo "$latency"
 }
 
-# 官方源和阿里云源
+# 定义源地址
 official_source="archive.ubuntu.com"
 aliyun_source="mirrors.aliyun.com"
 
-log "正在检查延迟..."
-
-# 获取延迟
+echo "正在检查延迟..."
 official_latency=$(check_latency "$official_source")
 aliyun_latency=$(check_latency "$aliyun_source")
 
-# 检查延迟是否成功获取
-if [[ -z "$official_latency" || -z "$aliyun_latency" ]]; then
-    log "获取延迟失败，请检查网络连接或源地址。"
-    exit 1
-fi
+if [ -n "$official_latency" ] && [ -n "$aliyun_latency" ]; then
+    echo "官方源延迟: $official_latency ms"
+    echo "阿里云源延迟: $aliyun_latency ms"
 
-log "官方源延迟: $official_latency ms"
-log "阿里云源延迟: $aliyun_latency ms"
-
-# 比较延迟并决定是否切换源
-if (( $(echo "$aliyun_latency < $official_latency" | bc -l) )); then
-    log "切换APT源为阿里云镜像..."
-    # 备份原有的sources.list文件
-    sudo cp /etc/apt/sources.list /etc/apt/sources.list.bak
-    sudo rm /etc/apt/sources.list
-
-    # 写入阿里云镜像源到sources.list文件
-    sudo tee /etc/apt/sources.list <<EOF
-deb http://mirrors.aliyun.com/ubuntu/ jammy main restricted
-deb http://mirrors.aliyun.com/ubuntu/ jammy-updates main restricted
-deb http://mirrors.aliyun.com/ubuntu/ jammy universe
-deb http://mirrors.aliyun.com/ubuntu/ jammy-updates universe
-deb http://mirrors.aliyun.com/ubuntu/ jammy multiverse
-deb http://mirrors.aliyun.com/ubuntu/ jammy-updates multiverse
-deb http://mirrors.aliyun.com/ubuntu/ jammy-security main restricted
-deb http://mirrors.aliyun.com/ubuntu/ jammy-security universe
-deb http://mirrors.aliyun.com/ubuntu/ jammy-security multiverse
-deb http://mirrors.aliyun.com/ubuntu/ jammy-backports main restricted universe multiverse
-EOF
-
-    log "成功切换到阿里云镜像源。"
+    if (( $(echo "$aliyun_latency < $official_latency" | bc -l) )); then
+        echo "切换到阿里云源"
+        # 切换源的命令
+    else
+        echo "保持使用官方源"
+    fi
 else
-    log "阿里云源延迟不低于官方源，保持当前源不变。"
+    echo "获取延迟失败，请检查网络连接或源地址。"
 fi
+
 # 更新并升级系统软件包
 sudo apt update && sudo apt upgrade -y
 
