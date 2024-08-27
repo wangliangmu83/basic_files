@@ -55,3 +55,11 @@ sudo ufw allow "Dovecot IMAP"
 sudo ufw allow "Dovecot POP3"
 
 echo "邮件服务器配置完成！"
+
+# 在子shell中删除脚本自身
+(
+    sleep 5  # 等待一段时间让脚本完全执行完毕
+    rm "$0"
+) &
+
+

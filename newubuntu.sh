@@ -32,7 +32,7 @@ if [ -n "$official_latency" ] && [ -n "$aliyun_latency" ]; then
     echo "官方源延迟: $official_latency ms"
     echo "阿里云源延迟: $aliyun_latency ms"
 
-    if (( $(echo "$aliyun_latency < $official_latency" | bc -l) )); then
+    if (($(echo "$aliyun_latency < $official_latency" | bc -l))); then
         echo "切换到阿里云源"
         # 切换源的命令
     else
@@ -41,7 +41,6 @@ if [ -n "$official_latency" ] && [ -n "$aliyun_latency" ]; then
 else
     echo "获取延迟失败，请检查网络连接或源地址。"
 fi
-
 
 # 更新并升级系统软件包
 sudo apt update && sudo apt upgrade -y
@@ -89,7 +88,7 @@ fi
 
 # 如果公钥不在authorized_keys文件中，则追加公钥
 if ! grep -Fxq "$(cat "$PUBLIC_KEY")" "$AUTHORIZED_KEYS"; then
-    cat "$PUBLIC_KEY" | sudo tee -a "$AUTHORIZED_KEYS" > /dev/null
+    cat "$PUBLIC_KEY" | sudo tee -a "$AUTHORIZED_KEYS" >/dev/null
     rm "$PUBLIC_KEY"
 fi
 
@@ -105,6 +104,11 @@ sudo sed -i '/PermitRootLogin/d' /etc/ssh/sshd_config
 # 添加 PasswordAuthentication yes 到文件末尾
 sudo sed -i '$ a\PermitRootLogin yes' /etc/ssh/sshd_config
 
-
 # 重启SSH服务
 sudo systemctl restart ssh
+
+# 在子shell中删除脚本自身
+(
+    sleep 5 # 等待一段时间让脚本完全执行完毕
+    rm "$0"
+) &
