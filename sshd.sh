@@ -5,36 +5,36 @@ PRIVATE_KEY="$SSH_DIR/id_rsa"
 PUBLIC_KEY="$SSH_DIR/id_rsa.pub"
 
 # 创建SSH目录并设置权限
-mkdir -p "$SSH_DIR" && sudo chmod 700 "$SSH_DIR"
+mkdir -p "$SSH_DIR" && chmod 700 "$SSH_DIR"
 # 创建authorized_keys文件并设置权限
-touch "$AUTHORIZED_KEYS" && sudo chmod 600 "$AUTHORIZED_KEYS"
+touch "$AUTHORIZED_KEYS" && chmod 600 "$AUTHORIZED_KEYS"
 
 # 如果私钥或公钥文件不存在，则生成新的密钥对
 if [ ! -f "$PRIVATE_KEY" ] || [ ! -f "$PUBLIC_KEY" ]; then
-  # 显示确认消息
   read -p "No SSH keys found. Generate new keys? (y/n): " confirm
   if [ "$confirm" = "y" ]; then
     echo "Please enter a passphrase for your SSH private key:"
     read -s -p "Passphrase: " passphrase
     echo
-    ssh-keygen -t rsa -b 4096 -C "king_rush@gmail.com" -f "$PRIVATE_KEY" -N
-    sudo chmod 600 "$PRIVATE_KEY"
-    sudo chmod 644 "$PUBLIC_KEY"
+    ssh-keygen -t rsa -b 4096 -C "king_rush@gmail.com" -f "$PRIVATE_KEY" -N "$passphrase"
+    chmod 600 "$PRIVATE_KEY"
+    chmod 644 "$PUBLIC_KEY"
   else
-    log "SSH key generation cancelled."
+    echo "SSH key generation cancelled."
   fi
 else
-  log "SSH keys already exist."
+  echo "SSH keys already exist."
 fi
 
 # 如果公钥不在authorized_keys文件中，则追加公钥
 if ! grep -Fxq "$(cat "$PUBLIC_KEY")" "$AUTHORIZED_KEYS"; then
-  cat "$PUBLIC_KEY" | sudo tee -a "$AUTHORIZED_KEYS" >/dev/null
-  rm "$PUBLIC_KEY"
+  cat "$PUBLIC_KEY" | tee -a "$AUTHORIZED_KEYS" >/dev/null
+  # 不删除公钥文件
 fi
 
-cp "$AUTHORIZED_KEYS"
-cp /root/.ssh/authorized_keys /home/gitsync/.ssh/authorized_keys
+# 复制 authorized_keys 到 gitsync 用户
+cp "$AUTHORIZED_KEYS" /home/gitsync/.ssh/authorized_keys
 
+# 设置权限
 chown gitsync:gitsync /home/gitsync/.ssh/authorized_keys
 chmod 600 /home/gitsync/.ssh/authorized_keys
