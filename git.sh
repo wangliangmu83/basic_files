@@ -98,22 +98,19 @@ EOF
 # 设置文件执行权限
 sudo chmod +x /usr/bin/git-shell
 
-# 切换到gitsync用户
+# 切换到gitsync用户并进行配置
 log "切换到gitsync用户并进行配置..."
 
-# 切换到gitsync用户
-su - gitsync <<-'EOF'
-    # 配置全局默认分支名称为 main
-    echo "配置全局默认分支名称为 main..."
+# 切换到gitsync用户并执行命令
+su - gitsync -c "
+    echo '配置全局默认分支名称为 main...'
     git config --global init.defaultBranch main
 
-    # 创建 Git 仓库并初始化
     mkdir -p ~/my_project.git
     cd ~/my_project.git
-    echo "初始化 Git 仓库..."
+    echo '初始化 Git 仓库...'
     git init --bare
-    echo "git初始化完毕"
+    echo 'git初始化完毕'
 
-    # 创建 main 分支
     git symbolic-ref HEAD refs/heads/main
-EOF
+"
