@@ -4,15 +4,18 @@
 log() {
     echo "$@"
 }
+
 # 设定一个默认密码
 PASSWORD="19831102Wq"
 
 # 设置用户密码的函数
 set_user_password() {
+    local username=\$1  # 将参数存储在局部变量中
     log "设置用户密码..."
+    
     # 使用expect来自动输入密码
     expect << EOF
-spawn passwd \$1
+spawn passwd $username
 expect "New password: "
 send "$PASSWORD\r"
 expect "Retype new password: "
