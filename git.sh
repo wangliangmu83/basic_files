@@ -71,6 +71,13 @@ log "切换到gitsync用户并进行配置..."
 
 # 切换到gitsync用户并执行命令
 su - gitsync -c "
+    mkdir -p ~/git-shell-commands
+    chmod 755 ~/git-shell-commands
+    echo '#!/bin/sh' > ~/git-shell-commands/help
+    echo 'echo "Welcome to Alibaba Cloud Elastic Compute Service!"' >> ~/git-shell-commands/help
+    chmod +x ~/git-shell-commands/help
+    
+    
     echo '配置全局默认分支名称为 main...'
     git config --global init.defaultBranch main
 
