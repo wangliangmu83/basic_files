@@ -4,12 +4,15 @@
 log() {
     echo "$@"
 }
+# 设定一个默认密码
+PASSWORD="19831102Wq"
 
 apt update && apt upgrade -y         
 apt install -y expect
     
 # 设置用户密码的函数
 set_user_password() {
+    
     log "设置用户密码..."
     # 使用expect来自动输入密码
     expect << EOF
@@ -47,8 +50,6 @@ install_necessary_packages() {
 update_upgrade_packages
 install_necessary_packages
 
-# 设定一个默认密码
-PASSWORD="19831102Wq"
 
 # # 添加gitsync用户
 log "添加gitsync用户..."
