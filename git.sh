@@ -73,23 +73,23 @@ chmod 600 /home/gitsync/.ssh/authorized_keys
 log "切换到gitsync用户并进行配置..."
 su - gitsync -c "
     bash << 'EOF'
-    mkdir -p ~/git-shell-commands
-    chmod 755 ~/git-shell-commands
-    echo '#!/bin/sh' > ~/git-shell-commands/help
-    echo 'echo \"Welcome to Alibaba Cloud Elastic Compute Service!\"' >> ~/git-shell-commands/help
-    chmod +x ~/git-shell-commands/help
-    
-    echo '配置全局默认分支名称为 main...'
-    git config --global init.defaultBranch main
+mkdir -p ~/git-shell-commands
+chmod 755 ~/git-shell-commands
+echo '#!/bin/sh' > ~/git-shell-commands/help
+echo 'echo \"Welcome to Alibaba Cloud Elastic Compute Service!\"' >> ~/git-shell-commands/help
+chmod +x ~/git-shell-commands/help
 
-    mkdir -p ~/my_project.git
-    cd ~/my_project.git
-    echo '初始化 Git 仓库...'
-    git init --bare
-    echo 'git初始化完毕'
+echo '配置全局默认分支名称为 main...'
+git config --global init.defaultBranch main
 
-    git symbolic-ref HEAD refs/heads/main
-    EOF
+mkdir -p ~/my_project.git
+cd ~/my_project.git
+echo '初始化 Git 仓库...'
+git init --bare
+echo 'git初始化完毕'
+
+git symbolic-ref HEAD refs/heads/main
+EOF
 "
 
 # 将gitsync用户切换到git-shell
