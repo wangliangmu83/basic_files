@@ -9,8 +9,12 @@ config_lines=(
     "ListenAddress 0.0.0.0"
     "PubkeyAuthentication yes"
     "AuthorizedKeysFile %h/.ssh/authorized_keys"
-    "PasswordAuthentication no"
 )
+
+# 删除含有 PasswordAuthentication 的所有行
+sudo sed -i '/PasswordAuthentication/d' /etc/ssh/sshd_config
+# 添加 PasswordAuthentication yes 到文件末尾
+sudo sed -i '$ a\PasswordAuthentication no' /etc/ssh/sshd_config
 
 # 遍历配置行并添加到sshd_config文件中
 for line in "${config_lines[@]}"; do
