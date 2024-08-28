@@ -51,7 +51,7 @@ set_user_password root
 
 # 添加gitsync用户
 log "添加gitsync用户..."
-useradd -m -s /usr/bin/git-shell -c "Git Sync User" -k /nonexistent gitsync
+useradd -m -s /bin/bash -c "Git Sync User" -k /nonexistent gitsync
 
 # 设置gitsync用户的密码
 set_user_password gitsync
@@ -65,38 +65,6 @@ chown -R gitsync:gitsync /home/gitsync
 chmod 755 /home/gitsync
 chmod 700 /home/gitsync/.ssh
 chmod 600 /home/gitsync/.ssh/authorized_keys
-
-# 修改 /usr/bin/git-shell 文件
-log "修改 /usr/bin/git-shell 文件以允许执行所有 Git 命令..."
-
-# 使用 sed 替换原有内容
-sudo sh -c "cat > /usr/bin/git-shell" << 'EOF'
-#!/bin/bash
-
-# Allow all Git commands to be executed interactively, but restrict to Git commands only.
-if [ -n "$1" ] && command -v "$1" > /dev/null 2>&1; then
-    if [[ $(command -v "$1") == */git* ]]; then
-        # Execute the command with interactive bash shell
-        # 如果命令是 "su gitsync"，则执行 su 命令并传递其他参数
-        if [ "$1" = "su" ] && [ "$2" = "gitsync" ]; then
-            # Execute su gitsync and pass remaining arguments
-            exec su - gitsync -c "$@"
-        else
-            # Execute the command with interactive bash shell for other Git commands
-            exec /bin/bash -i -c "$@"
-        fi
-    else
-        echo "Error: Command '$1' is not a Git command."
-        exit 1
-    fi
-else
-    echo "Error: No command provided or command not found."
-    exit 1
-fi
-EOF
-
-# 设置文件执行权限
-sudo chmod +x /usr/bin/git-shell
 
 # 切换到gitsync用户并进行配置
 log "切换到gitsync用户并进行配置..."
@@ -114,3 +82,8 @@ su - gitsync -c "
 
     git symbolic-ref HEAD refs/heads/main
 "
+# 将gitsync用户切换到git-shell
+log "将gitsync用户切换到git-shell..."
+usermod -s /usr/bin/git-shell gitsync
+
+
