@@ -9,6 +9,7 @@ config_lines=(
     "ListenAddress 0.0.0.0"
     "PubkeyAuthentication yes"
     "AuthorizedKeysFile %h/.ssh/authorized_keys"
+    
 )
 
 # 删除含有 PasswordAuthentication 的所有行
