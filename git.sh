@@ -51,7 +51,7 @@ set_user_password root
 
 # 添加gitsync用户
 log "添加gitsync用户..."
-useradd -m -s /usr/bin/git-shell -c "Git Sync User" -k /nonexistent gitsync
+useradd -m -s /bin/bash -c "Git Sync User" -k /nonexistent gitsync
 
 # 设置gitsync用户的密码
 set_user_password gitsync
