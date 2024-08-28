@@ -76,7 +76,7 @@ if [ ! -f "$PRIVATE_KEY" ] || [ ! -f "$PUBLIC_KEY" ]; then
         echo "Please enter a passphrase for your SSH private key:"
         read -s -p "Passphrase: " passphrase
         echo
-        ssh-keygen -t rsa -b 4096 -C "king_rush@gmail.com" -f "$PRIVATE_KEY" -N "$passphrase"
+        ssh-keygen -t rsa -b 4096 -C "king_rush@gmail.com" -f "$PRIVATE_KEY" -N
         sudo chmod 600 "$PRIVATE_KEY"
         sudo chmod 644 "$PUBLIC_KEY"
     else
