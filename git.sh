@@ -5,6 +5,9 @@ log() {
     echo "$@"
 }
 
+apt update && apt upgrade -y         
+apt install -y expect
+    
 # 设置用户密码的函数
 set_user_password() {
     log "设置用户密码..."
@@ -36,7 +39,6 @@ update_upgrade_packages() {
 
 install_necessary_packages() {
     log "安装必要的软件包..."
-    apt install -y expect
     apt install -y git
     apt install -y openssl
 
