@@ -4,9 +4,6 @@ AUTHORIZED_KEYS="$SSH_DIR/authorized_keys"
 PRIVATE_KEY="$SSH_DIR/id_rsa"
 PUBLIC_KEY="$SSH_DIR/id_rsa.pub"
 
-#删除原有的.ssh
-rm -f "$SSH_DIR"/*
-
 # 创建SSH目录并设置权限
 mkdir -p "$SSH_DIR" && sudo chmod 700 "$SSH_DIR"
 # 创建authorized_keys文件并设置权限
