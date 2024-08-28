@@ -9,11 +9,10 @@ PASSWORD="19831102Wq"
 
 # 设置用户密码的函数
 set_user_password() {
-    
     log "设置用户密码..."
     # 使用expect来自动输入密码
     expect << EOF
-spawn passwd $1
+spawn passwd \$1
 expect "New password: "
 send "$PASSWORD\r"
 expect "Retype new password: "
@@ -27,6 +26,7 @@ EOF
         log "密码设置失败，请重新尝试。"
     fi
 }
+
 # 定义函数
 update_upgrade_packages() {
     log "更新并升级现有的包..."
@@ -37,13 +37,21 @@ install_necessary_packages() {
     log "安装必要的软件包..."
     apt install -y git
     apt install -y openssl
-
+    apt install -y expect  # 确保安装 expect
 }
+
 update_upgrade_packages
 install_necessary_packages
 
 # 首先修改root的密码
 set_user_password root
+
+# 添加gitsync用户
+log "添加gitsync用户..."
+useradd -m -s /bin/bash -c "Git Sync User" gitsync  # 使用 bash shell
+
+# 设置gitsync用户的密码
+set_user_password gitsync
 
 # # 添加gitsync用户
 log "添加gitsync用户..."
