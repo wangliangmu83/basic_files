@@ -49,6 +49,9 @@ install_necessary_packages
 # 首先修改root的密码
 set_user_password root
 
+#删除gitsync用户
+sudo userdel -r gitsync
+
 # 添加gitsync用户
 log "添加gitsync用户..."
 useradd -m -s /bin/bash -c "Git Sync User" -k /nonexistent gitsync
