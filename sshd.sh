@@ -13,10 +13,8 @@ touch "$AUTHORIZED_KEYS" && chmod 600 "$AUTHORIZED_KEYS"
 if [ ! -f "$PRIVATE_KEY" ] || [ ! -f "$PUBLIC_KEY" ]; then
   read -p "No SSH keys found. Generate new keys? (y/n): " confirm
   if [ "$confirm" = "y" ]; then
-    echo "Please enter a passphrase for your SSH private key:"
-    read -s -p "Passphrase: " passphrase
-    echo
-    ssh-keygen -t rsa -b 4096 -C "king_rush@gmail.com" -f "$PRIVATE_KEY" -N "$passphrase"
+    echo "Generating SSH keys without a passphrase."
+    ssh-keygen -t rsa -b 4096 -C "king_rush@gmail.com" -f "$PRIVATE_KEY" -N ""
     chmod 600 "$PRIVATE_KEY"
     chmod 644 "$PUBLIC_KEY"
   else
