@@ -25,32 +25,38 @@ EOF
     fi
 }
 
-# 设定一个默认密码
-PASSWORD="19831102Wq"
-
-# 安装expect
-apt update -y
-apt install -y expect
-
 # 首先修改root的密码
 set_user_password root
 
-# 升级已安装的软件包
-apt update -y
-apt upgrade -y
-log "升级ubuntu系统软件包"
+# 定义函数
+update_upgrade_packages() {
+    log "更新并升级现有的包..."
+    apt update && apt upgrade -y
+}
 
-# 安装Git
-apt install -y git
+install_necessary_packages() {
+    log "安装必要的软件包..."
+    apt install -y expect
+    apt install -y git
+    apt install -y openssl
 
-# 安装Perl及其依赖
-apt install -y perl
+}
+
+update_upgrade_packages
+install_necessary_packages
+
+# 设定一个默认密码
+PASSWORD="19831102Wq"
 
 # # 添加gitsync用户
 log "添加gitsync用户..."
 
-# 使用-k /nonexistent参数避免复制骨架目录
-useradd -m -s /bin/bash -c "Git Sync User" -k /nonexistent gitsync
+# 创建新用户gitsync，指定必要的用户配置
+useradd -m -s /usr/bin/git-shell -c "Git Sync User" -k /nonexistent gitsync
+# -m: 创建用户家目录
+# -s /bin/bash: 设置用户的shell为bash
+# -c "Git Sync User": 设置用户的描述信息
+# -k /nonexistent: 设置用户的默认系统配置文件，如果指定文件不存在则不使用
 
 # 检查/home/gitsync目录是否已存在
 if [ ! -d "/home/gitsync" ]; then
@@ -75,11 +81,12 @@ set_user_password gitsync
 
 # gitsync密钥文件授权
 chmod 700 /home/gitsync/.ssh
+
+cp /root/.ssh/authorized_keys /home/gitsync/.ssh
 chmod 600 /home/gitsync/.ssh/authorized_keys
 chown -R gitsync:gitsync /home/gitsync/.ssh
+chown -R gitsync:gitsync /home/gitsync/.ssh/authorized_keys
 
-#给gitsync限制权限为git-shell
-chsh -s /usr/bin/git-shell gitsync
 
 # 切换到gitsync用户
 su - gitsync <<-'EOF'
@@ -94,15 +101,17 @@ su - gitsync <<-'EOF'
     git init --bare
     echo "git初始化完毕"
 
-    # 配置默认分支名称为 main
-    git symbolic-ref refs/heads/master refs/heads/main
-    rm -rf .git/refs/heads/master
+    # 创建 main 分支
+    git symbolic-ref HEAD refs/heads/main
 EOF
 
 # 执行完成后退出gitsync用户的shell会话
 log "退出gitsync用户的shell会话..."
 exit
 
+#给gitsync限制权限为git-shell
+chsh -s /usr/bin/git-shell gitsync
+ 
 
 # 在子shell中删除脚本自身
 (
