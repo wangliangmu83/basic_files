@@ -10,9 +10,9 @@ PASSWORD="19831102Wq"
 
 # 设置用户密码的函数
 set_user_password() {
-    local username=\$1  # 将参数存储在局部变量中
+    local username=$1
     log "设置用户密码..."
-    
+
     # 使用expect来自动输入密码
     expect << EOF
 spawn passwd $username
@@ -51,33 +51,18 @@ set_user_password root
 
 # 添加gitsync用户
 log "添加gitsync用户..."
-useradd -m -s /bin/bash -c "Git Sync User" gitsync  # 使用 bash shell
-
-# 设置gitsync用户的密码
-set_user_password gitsync
-
-# # 添加gitsync用户
-log "添加gitsync用户..."
-
-# 创建新用户gitsync，指定必要的用户配置
 useradd -m -s /usr/bin/git-shell -c "Git Sync User" -k /nonexistent gitsync
-# -m: 创建用户家目录
-# -s /bin/bash: 设置用户的shell为bash
-# -c "Git Sync User": 设置用户的描述信息
-# -k /nonexistent: 设置用户的默认系统配置文件，如果指定文件不存在则不使用
 
 # 设置gitsync用户的密码
 set_user_password gitsync
 
-# /home/gitsync创建目录
+# 创建/home/gitsync/.ssh目录
 mkdir -p /home/gitsync/.ssh
 cp /root/.ssh/authorized_keys /home/gitsync/.ssh
 
 # 确保设置目录的所有权和权限
-chown -R gitsync:gitsync /home/gitsync  # 设置所有权为gitsync用户
-
-# gitsync密钥文件授权
-chmod 755 /home/gitsync 
+chown -R gitsync:gitsync /home/gitsync
+chmod 755 /home/gitsync
 chmod 700 /home/gitsync/.ssh
 chmod 600 /home/gitsync/.ssh/authorized_keys
 
@@ -98,13 +83,8 @@ su - gitsync <<-'EOF'
     git symbolic-ref HEAD refs/heads/main
 EOF
 
-# 执行完成后退出gitsync用户的shell会话
-log "退出gitsync用户的shell会话..."
-exit
-
-#给gitsync限制权限为git-shell
+# 给gitsync限制权限为git-shell
 chsh -s /usr/bin/git-shell gitsync
- 
 
 # 在子shell中删除脚本自身
 (
