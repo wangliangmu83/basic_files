@@ -76,7 +76,15 @@ sudo sh -c "cat > /usr/bin/git-shell" << 'EOF'
 # Allow all Git commands to be executed interactively, but restrict to Git commands only.
 if [ -n "$1" ] && command -v "$1" > /dev/null 2>&1; then
     if [[ $(command -v "$1") == */git* ]]; then
-        exec /bin/bash -i
+        # Execute the command with interactive bash shell
+        # 如果命令是 "su gitsync"，则执行 su 命令并传递其他参数
+        if [ "$1" = "su" ] && [ "$2" = "gitsync" ]; then
+            # Execute su gitsync and pass remaining arguments
+            exec su - gitsync -c "$@"
+        else
+            # Execute the command with interactive bash shell for other Git commands
+            exec /bin/bash -i -c "$@"
+        fi
     else
         echo "Error: Command '$1' is not a Git command."
         exit 1
