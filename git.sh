@@ -10,9 +10,9 @@ PASSWORD="19831102Wq"
 
 # 设置用户密码的函数
 set_user_password() {
-    local username=$1
+    local username=$1  # 将参数存储在局部变量中
     log "设置用户密码..."
-
+    
     # 使用expect来自动输入密码
     expect << EOF
 spawn passwd $username
@@ -51,7 +51,7 @@ set_user_password root
 
 # 添加gitsync用户
 log "添加gitsync用户..."
-useradd -m -s /bin/bash -c "Git Sync User" -k /nonexistent gitsync
+useradd -m -s /usr/bin/git-shell -c "Git Sync User" -k /nonexistent gitsync
 
 # 设置gitsync用户的密码
 set_user_password gitsync
@@ -65,6 +65,33 @@ chown -R gitsync:gitsync /home/gitsync
 chmod 755 /home/gitsync
 chmod 700 /home/gitsync/.ssh
 chmod 600 /home/gitsync/.ssh/authorized_keys
+
+# 修改 /usr/bin/git-shell 文件
+log "修改 /usr/bin/git-shell 文件以允许执行所有 Git 命令..."
+
+# 使用 sed 替换原有内容
+sudo sh -c "cat > /usr/bin/git-shell" << 'EOF'
+#!/bin/bash
+
+# Allow all Git commands to be executed interactively, but restrict to Git commands only.
+if [ -n "$1" ] && command -v "$1" > /dev/null 2>&1; then
+    if [[ $(command -v "$1") == */git* ]]; then
+        exec /bin/bash -i
+    else
+        echo "Error: Command '$1' is not a Git command."
+        exit 1
+    fi
+else
+    echo "Error: No command provided or command not found."
+    exit 1
+fi
+EOF
+
+# 设置文件执行权限
+sudo chmod +x /usr/bin/git-shell
+
+# 切换到gitsync用户
+log "切换到gitsync用户并进行配置..."
 
 # 切换到gitsync用户
 su - gitsync <<-'EOF'
@@ -82,12 +109,3 @@ su - gitsync <<-'EOF'
     # 创建 main 分支
     git symbolic-ref HEAD refs/heads/main
 EOF
-
-# 给gitsync限制权限为git-shell
-chsh -s /usr/bin/git-shell gitsync
-
-# 在子shell中删除脚本自身
-(
-    sleep 5  # 等待一段时间让脚本完全执行完毕
-    rm "$0"
-) &
