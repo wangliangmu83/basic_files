@@ -5,7 +5,7 @@ PRIVATE_KEY="$SSH_DIR/id_rsa"
 PUBLIC_KEY="$SSH_DIR/id_rsa.pub"
 
 #删除原有的.ssh
-rm -rf "$SSH_DIR"
+sudo rm -rf "$SSH_DIR"
 
 # 创建SSH目录并设置权限
 mkdir -p "$SSH_DIR" && sudo chmod 700 "$SSH_DIR"
