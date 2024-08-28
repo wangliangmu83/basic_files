@@ -89,7 +89,6 @@ fi
 # 如果公钥不在authorized_keys文件中，则追加公钥
 if ! grep -Fxq "$(cat "$PUBLIC_KEY")" "$AUTHORIZED_KEYS"; then
     cat "$PUBLIC_KEY" | sudo tee -a "$AUTHORIZED_KEYS" >/dev/null
-    rm "$PUBLIC_KEY"
 fi
 
 # 修改sshd_config以允许密码登录
