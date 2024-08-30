@@ -6,7 +6,9 @@ shell_renew(){
     ln -s /root/.naive.sh /usr/bin/naive
     echo
     echo " naive 命令安装完毕，请使用naive进行操作。"
-    
+
 }
+
+
 
 shell_renew
