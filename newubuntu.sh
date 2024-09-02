@@ -35,6 +35,8 @@ if [ -n "$official_latency" ] && [ -n "$aliyun_latency" ]; then
     if (($(echo "$aliyun_latency < $official_latency" | bc -l))); then
         echo "切换到阿里云源"
         # 切换源的命令
+        sudo cp /etc/apt/sources.list /etc/apt/sources.list.bak
+        sudo sed -i 's|http://archive.ubuntu.com/ubuntu/|http://mirrors.aliyun.com/ubuntu/|g' /etc/apt/sources.list
     else
         echo "保持使用官方源"
     fi
