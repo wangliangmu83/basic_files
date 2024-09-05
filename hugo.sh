@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 创建新用户并提示输入密码
-sudo adduser website
+sudo adduser website --gecos "kaka,000,000000,11110000"
 
 # 将新用户添加到 sudo 组
 sudo usermod -aG sudo website
@@ -19,12 +19,14 @@ sudo apt-get update
 sudo apt-get install -y hugo
 
 # 创建 Hugo 站点
-hugo new site my-website
-cd my-website
+hugo new site my_website
+cd my_website
 
 # 初始化 Git 并安装主题
 git init
-git submodule add https://github.com/CaiJimmy/hugo-theme-stack/ themes/hugo-theme-stack
+git submodule add https://github.com/CaiJimmy/hugo-theme-Perplex/ themes/hugo-theme-Perplex
+
+git submodule add https://github.com/theNewDynamic/gohugo-theme-Perplex.git themes/Perplex
 
 # 创建示例内容
 hugo new posts/my-first-post.md
