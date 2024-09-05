@@ -1,8 +1,7 @@
 #!/bin/bash
 
-# 创建新用户并设置密码
-sudo adduser website --gecos "First Last,RoomNumber,WorkPhone,HomePhone" --disabled-password
-echo "website:yourpassword" | sudo chpasswd
+# 创建新用户并提示输入密码
+sudo adduser website
 
 # 将新用户添加到 sudo 组
 sudo usermod -aG sudo website
